@@ -3,14 +3,15 @@ import re
 from collections import namedtuple
 import pandas as pd
 import sys
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+LOG = logging.getLogger(__name__)
+
 
 ROUNDS_ARCHIVE = 'data/month.2020-09.zip'
 OUTPUT_FILENAME = 'manuel-2020-09-cargo.xlsx'
-
-
-def log_error(*args, **kwargs):
-    kwargs['file'] = sys.stderr
-    print(*args, **kwargs)
 
 
 def parse_round_id(filename):
@@ -34,7 +35,7 @@ def match_order(log_line):
     m = re.search(r"Order #(\d+) \((.+), placed by (.+)/\((.+)\)\), paid by (.+) has shipped.", log_line)
     shipment_order = 'has shipped' in log_line
     if bool(m) != bool(shipment_order):
-        log_error("Failed to parse cargo order, check your regex: {}".format(log_line))
+        LOG.error("Failed to parse cargo order, check your regex: {}".format(log_line))
     if m:
         return m.groups()
     return None
