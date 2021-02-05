@@ -1,4 +1,0 @@
-[2020-09-02 00:32:00.779] Starting up round ID 145507.
- - -------------------------
-[2020-09-02 00:38:54.975] PDA: Bondismyname/(Breathes-The-Fire) (PDA: geneticist PDA to Micheal Mikey Mcclyndon (Head of Security)) "you are currently highest in command, mind heading to HoPline when you get the chance?" (Command Hallway (97,129,2))
-[2020-09-02 00:39:11.138] PDA: Lexbomb6464/(Micheal Mikey Mcclyndon) (PDA: head of security PDA to Breathes-The-Fire (Geneticist)) "Sure" (Head of Security's Office (119,181,2))
