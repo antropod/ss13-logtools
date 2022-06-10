@@ -45,15 +45,14 @@ def match_path_pattern(pattern, path):
 class RoundArchiveUrlSpider(scrapy.Spider):
     name = 'round-archive-url'
     allowed_domains = ['tgstation13.org']
-    start_urls = ['https://tgstation13.org/parsed-logs/manuel/data/logs/2021/']
-    # start_urls = ['http://127.0.0.1:8888/manuel_6.html']
+    start_urls = ['https://tgstation13.org/parsed-logs/manuel/data/logs/2022/']
 
     def parse(self, response):
         # get header and parse it
         path_str = response.xpath('//h1/text()').get()[9:]
         assert path_str[0] == path_str[-1] == '/'
 
-        allowed_paths = r'/parsed-logs/manuel/data/logs/2021/\d{2}/\d{2}/round-\d+\.zip'
+        allowed_paths = r'/parsed-logs/manuel/data/logs/2022/\d{2}/\d{2}/round-\d+\.zip'
 
         for path in response.xpath(r'//pre/a/@href').getall():
             next_path = path_str + path

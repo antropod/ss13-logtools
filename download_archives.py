@@ -7,6 +7,7 @@ import logging
 import requests
 import socket
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 socket.setdefaulttimeout(10)
 
@@ -30,9 +31,25 @@ def _download(url, filename):
         for chunk in response.iter_content(1024**2):
             fp.write(chunk)
 
+
 def download(url, filename):
     logger.info("Downloading %s to %s", url, filename)
     urllib.request.urlretrieve(url, filename)
+
+
+def worker_download(item, directory="logs"):
+    url = item["url"]
+    filename = os.path.join(directory, item["name"])
+
+    if os.path.exists(filename):
+        logger.info("%s already exists", filename)
+        return
+
+    try:
+        download(url, filename)
+    except Exception as e:
+        logger.exception("Failed to download %s", url)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -49,17 +66,8 @@ def main():
     if not os.path.exists(args.directory):
         os.mkdir(args.directory)
 
-    for entry in file_list:
-        url = entry["url"]
-        filename = os.path.join(args.directory, entry["name"])
-        if os.path.exists(filename):
-            logger.info("%s already exists", filename)
-            continue
-        try:
-            download(url, filename)
-        except Exception as e:
-            logger.exception("Failed to download %s", url)
-        # time.sleep(5)
+    pool = ThreadPoolExecutor(8)
+    pool.map(worker_download, file_list)
 
 
 if __name__ == "__main__":
