@@ -2,12 +2,22 @@ import re
 import logging
 from zipfile import ZipFile
 import io
+import os
 
 from collections import namedtuple
+import datetime
 
 
-logging.basicConfig(level=logging.INFO, format='%(message)s')
 LOG = logging.getLogger(__name__)
+
+
+def nullable_int(x):
+    if x is None:
+        return None
+    return int(x)
+
+def parse_dt_string(dt_string):
+    return datetime.datetime.strptime(dt_string, "%Y-%m-%d %H:%M:%S.%f")
 
 
 def parse_uplink_txt(stream):
@@ -20,7 +30,7 @@ def parse_uplink_txt(stream):
         line = line.rstrip('\n')
         if line.startswith(' -'):
             continue
-        m = re.match(r"\[([^\]]+)\] ([^:]+): ([^/]+)/\(([^)]+)\) (.*)$", line)
+        m = re.match(r"\[([^\]]+)\] ([^:]+): ([^/]+)/\((.+)\) (purchased .*)$", line)
         if not m:
             LOG.warning("Can't parse %s", line)
             continue
@@ -31,20 +41,28 @@ def parse_uplink_txt(stream):
 
         m = re.match(r"purchased (.+?)(?: \(([\d]+)% off!\))? for (\d+) telecrystals from (.*)'s uplink$", message)
         if not m:
-            LOG.warning("Can't parse message \"%s\"", message)
+            LOG.warning("Can't parse \"%s\"", message)
             continue
 
         item, discount, price, source = m.groups()
 
-        yield dt, type_, ckey, name, item, discount, price, source
+        yield round_id, parse_dt_string(dt), type_, ckey, name, item, nullable_int(discount), int(price), source
+
+
+def parse_from_archive(directory, archive_filename, log_filename):
+    with ZipFile(os.path.join(directory, archive_filename), "r") as zf:
+        try:
+            with zf.open(log_filename) as fp:
+                stream = io.TextIOWrapper(fp, 'latin-1')
+                for record in parse_uplink_txt(stream):
+                    yield record
+        except KeyError as exc:
+            LOG.error("Failed to open %s: %s", archive_filename, str(exc))
 
 
 def main():
-    with ZipFile("logs_2022/round-187172.zip", "r") as zf:
-        with zf.open('uplink.txt') as fp:
-            stream = io.TextIOWrapper(fp, 'latin-1')
-            for line in parse_uplink_txt(stream):
-                print(line)
+    for record in parse_from_archive("logs_2022", "round-186148.zip", "uplink.txt"):
+        print(record)
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ import logging
 import requests
 import socket
 import time
+from functools import partial
 from concurrent.futures import ThreadPoolExecutor
 
 socket.setdefaulttimeout(10)
@@ -37,7 +38,7 @@ def download(url, filename):
     urllib.request.urlretrieve(url, filename)
 
 
-def worker_download(item, directory="logs"):
+def worker_download(item, directory):
     url = item["url"]
     filename = os.path.join(directory, item["name"])
 
@@ -67,7 +68,7 @@ def main():
         os.mkdir(args.directory)
 
     pool = ThreadPoolExecutor(8)
-    pool.map(worker_download, file_list)
+    pool.map(partial(worker_download, directory=args.directory), file_list)
 
 
 if __name__ == "__main__":
