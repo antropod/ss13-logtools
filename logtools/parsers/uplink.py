@@ -1,27 +1,14 @@
-from logtools.models.uplink import Uplink, Changeling
-
 import re
 import logging
-from zipfile import ZipFile, BadZipFile
-import io
-import os
 
-from collections import namedtuple
-import datetime
+from logtools.models.uplink import Uplink, Changeling
+from logtools.parsers.base import BaseParser
+from logtools.parsers.functions import parse_dt_string, nullable_int
+
 
 LOG = logging.getLogger(__name__)
 
-
-def nullable_int(x):
-    if x is None:
-        return None
-    return int(x)
-
-def parse_dt_string(dt_string):
-    return datetime.datetime.strptime(dt_string, "%Y-%m-%d %H:%M:%S.%f")
-
-
-class UplinkTxtParser:
+class UplinkTxtParser(BaseParser):
 
     log_filename = "uplink.txt"
 
@@ -74,16 +61,3 @@ class UplinkTxtParser:
             else:
                 LOG.warning("Message type: \"%s\" is not supported", type_)
                 continue
-
-
-    def parse_file_from_archive(self, directory, archive_filename):
-        try:
-            with ZipFile(os.path.join(directory, archive_filename), "r") as zf:        
-                with zf.open(self.log_filename) as fp:
-                    stream = io.TextIOWrapper(fp, 'latin-1')
-                    for record in self.parse_stream(stream):
-                        yield record
-        except KeyError as exc:
-            LOG.error("Failed to open %s:%s - %s", archive_filename, self.log_filename, str(exc))
-        except BadZipFile as exc:
-            LOG.error("Failed to open %s - %s", archive_filename, str(exc))

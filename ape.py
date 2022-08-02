@@ -3,7 +3,9 @@ import logging
 import io
 
 from logtools.models.meta import Base
-from logtools.models.uplink import Uplink
+from logtools.models.uplink import Uplink, Changeling
+from logtools.models.manifest import Manifest
+from logtools.parsers.manifest import ManifestTxtParser
 from logtools.parsers.uplink import UplinkTxtParser
 
 from sqlalchemy import create_engine
@@ -14,17 +16,22 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] - %(levelname)s - 
 LOG = logging.getLogger(__name__)
 
 
-
-
-def parse_into_db(directory, archive_filename, session):
-    parser = UplinkTxtParser()
+def parse_one_filetype(parser, directory, archive_filename, session):
     for record in parser.parse_file_from_archive(directory, archive_filename):
         session.add(record)
     session.commit()
 
 
+def parse_into_db(directory, archive_filename, session):
+    parsers = [UplinkTxtParser(), ManifestTxtParser()]
+    for parser in parsers:
+        parse_one_filetype(parser, directory, archive_filename, session)
+
+
 def parse_directory_into_db(directory, session):
-    session.query(Uplink).delete()
+    to_delete = [Uplink, Changeling, Manifest]
+    for model in to_delete:
+        session.query(model).delete()
     session.commit()
 
     for archive_filename in os.listdir(directory):
@@ -39,7 +46,8 @@ def main():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    parse_directory_into_db("logs_2022", session)
+    parse_directory_into_db("logs_manuel_2022", session)
+    # parse_manifest("logs_manuel_2022", "round-187324.zip", session)
 
 
 if __name__ == "__main__":
