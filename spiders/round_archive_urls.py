@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 import re
 import scrapy
+from datetime import date
 
 # Script for downloading ids of rounds and links to zip files from /tg/ website
 # requires scrapy
@@ -45,14 +46,14 @@ def match_path_pattern(pattern, path):
 class RoundArchiveUrlSpider(scrapy.Spider):
     name = 'round-archive-url'
     allowed_domains = ['tgstation13.org']
-    start_urls = ['https://tgstation13.org/parsed-logs/manuel/data/logs/2022/']
+    start_urls = ['https://tgstation13.org/parsed-logs/']
 
     def parse(self, response):
         # get header and parse it
         path_str = response.xpath('//h1/text()').get()[9:]
         assert path_str[0] == path_str[-1] == '/'
 
-        allowed_paths = r'/parsed-logs/manuel/data/logs/2022/\d{2}/\d{2}/round-\d+\.zip'
+        allowed_paths = r'/parsed-logs/\w+/data/logs/\d{4}/\d{2}/\d{2}/round-\d+\.zip'
 
         for path in response.xpath(r'//pre/a/@href').getall():
             next_path = path_str + path
@@ -60,10 +61,14 @@ class RoundArchiveUrlSpider(scrapy.Spider):
             if match_path_pattern(allowed_paths, next_path):
                 if path.endswith('.zip'):  # we are at the end, get the link
                     _, server, _, _, year, month, day = path_str[1:-1].split('/')
+                    m = re.match(r"round-(\d+)\.zip", path)
+                    if not m:
+                        continue
+                    round_id = int(m.group(1))
                     yield {
+                        'round_id': round_id,
+                        'dt': date(int(year), int(month), int(day)),
                         'server': server,
-                        'dt': '{}-{}-{}'.format(year, month, day),
-                        'name': path,
                         'url': urljoin(response.url, url)
                     }
                 else:  # Navigate
