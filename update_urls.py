@@ -1,5 +1,5 @@
 from scrapy.crawler import CrawlerProcess
-from spiders.round_archive_urls import RoundArchiveUrlSpider
+from logtools.spiders.round_archive_urls import RoundArchiveUrlSpider
 from sqlalchemy.orm import sessionmaker
 from common import create_default_engine
 

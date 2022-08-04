@@ -53,7 +53,7 @@ class RoundArchiveUrlSpider(scrapy.Spider):
         path_str = response.xpath('//h1/text()').get()[9:]
         assert path_str[0] == path_str[-1] == '/'
 
-        allowed_paths = r'/parsed-logs/\w+/data/logs/\d{4}/\d{2}/\d{2}/round-\d+\.zip'
+        allowed_paths = r'/parsed-logs/[^/]+/data/logs/\d{4}/\d{2}/\d{2}/round-\d+\.zip'
 
         for path in response.xpath(r'//pre/a/@href').getall():
             next_path = path_str + path

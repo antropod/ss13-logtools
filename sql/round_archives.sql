@@ -10,4 +10,5 @@ from (
         strftime("%Y", dt) as year
     from round_archive_url
 )
-group by server, year;
+group by server, year
+order by server, year;
