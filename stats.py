@@ -8,7 +8,7 @@ def read_file(filename):
 
 
 def main():
-    engine = create_engine("sqlite:///logs.db")
+    engine = create_engine("sqlite:///logs.sqlite")
     sql_query = read_file("sql/jobs.sql")
     with engine.connect() as conn:
         df = pd.read_sql(sql_query, conn, parse_dates="dt")

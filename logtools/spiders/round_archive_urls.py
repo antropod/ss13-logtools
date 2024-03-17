@@ -2,6 +2,7 @@ from urllib.parse import urljoin
 import re
 import scrapy
 from datetime import date
+import logging
 
 # Script for downloading ids of rounds and links to zip files from /tg/ website
 # requires scrapy
@@ -9,8 +10,14 @@ from datetime import date
 #
 # $ scrapy runspider round_archive_urls.py -o data.json
 
+LOG = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+
 def match_path_pattern(pattern, path):
     r"""
+    >>> match_path_pattern(r'/parsed-logs/[a-zA-Z-]+/data/logs/\d{4}/\d{2}/\d{2}/round-\d+\.zip', '/parsed-logs/../')
+    False
+
     >>> match_path_pattern(r'/a/b/c/', '/a/b/')
     True
 
@@ -53,11 +60,12 @@ class RoundArchiveUrlSpider(scrapy.Spider):
         path_str = response.xpath('//h1/text()').get()[9:]
         assert path_str[0] == path_str[-1] == '/'
 
-        allowed_paths = r'/parsed-logs/[^/]+/data/logs/\d{4}/\d{2}/\d{2}/round-\d+\.zip'
+        allowed_paths = r'/parsed-logs/[a-zA-Z-]+/data/logs/\d{4}/\d{2}/\d{2}/round-\d+\.zip'
 
         for path in response.xpath(r'//pre/a/@href').getall():
             next_path = path_str + path
             url = urljoin(response.url, path)
+            LOG.debug(f"{next_path=}")
             if match_path_pattern(allowed_paths, next_path):
                 if path.endswith('.zip'):  # we are at the end, get the link
                     _, server, _, _, year, month, day = path_str[1:-1].split('/')

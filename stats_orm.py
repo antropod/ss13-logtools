@@ -44,7 +44,7 @@ def run_query(session):
 
 
 def main():
-    engine = create_engine("sqlite:///logs.db")
+    engine = create_engine("sqlite:///logs.sqlite")
     Session = sessionmaker(bind=engine)
     with Session.begin() as session:
         run_query(session)

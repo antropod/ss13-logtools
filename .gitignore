@@ -1,7 +1,7 @@
 data/
-venv/
+.venv/
 logs*/
-*.db
+*.sqlite
 *.xlsx
 *.pyc
 *.txt
