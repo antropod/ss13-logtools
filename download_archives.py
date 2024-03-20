@@ -1,14 +1,18 @@
 import argparse
 import json
+import logging
 import os
 import os.path
-import urllib.request
-import logging
-import requests
 import socket
 import time
-from functools import partial
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+from functools import partial
+
+import requests
+
+from common import Session
+from logtools.models.round_archive_url import RoundArchiveUrl
 
 socket.setdefaulttimeout(10)
 
@@ -54,15 +58,27 @@ def worker_download(item, directory):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("filename")
     parser.add_argument("-d", "--directory", default="logs")
     return parser.parse_args()
+
+
+def get_archives_from_db(model):
+    response = Session()\
+        .query(model)\
+        .filter(
+            model.dt >= "2024-01-01",
+            model.server == "terry",
+        )\
+        .order_by(model.round_id)\
+        .all()
+    for r in response:
+        yield {"url": r.url, "name": f"round-{r.round_id}.zip"}
 
 
 def main():
     args = parse_args()
 
-    file_list = load_json(args.filename)
+    file_list = list(get_archives_from_db(RoundArchiveUrl))
 
     if not os.path.exists(args.directory):
         os.mkdir(args.directory)

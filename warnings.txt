@@ -1,9 +1,0 @@
-Can't parse [2021-01-01 01:32:47.375] Starting up round ID 153311.
-Traceback (most recent call last):
-  File "game.py", line 40, in <module>
-    main()
-  File "game.py", line 36, in main
-    print(m)
-  File "C:\Soft\Anaconda3\lib\encodings\cp1251.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-UnicodeEncodeError: 'charmap' codec can't encode character '\ufffd' in position 75: character maps to <undefined>

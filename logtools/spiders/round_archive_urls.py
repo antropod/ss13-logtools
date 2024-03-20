@@ -10,9 +10,6 @@ import logging
 #
 # $ scrapy runspider round_archive_urls.py -o data.json
 
-LOG = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
-
 def match_path_pattern(pattern, path):
     r"""
     >>> match_path_pattern(r'/parsed-logs/[a-zA-Z-]+/data/logs/\d{4}/\d{2}/\d{2}/round-\d+\.zip', '/parsed-logs/../')
@@ -65,7 +62,6 @@ class RoundArchiveUrlSpider(scrapy.Spider):
         for path in response.xpath(r'//pre/a/@href').getall():
             next_path = path_str + path
             url = urljoin(response.url, path)
-            LOG.debug(f"{next_path=}")
             if match_path_pattern(allowed_paths, next_path):
                 if path.endswith('.zip'):  # we are at the end, get the link
                     _, server, _, _, year, month, day = path_str[1:-1].split('/')
