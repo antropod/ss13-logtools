@@ -1,3 +1,5 @@
+Partial updates when fetching urls
+Unified CLI tool
+
 When parsing round, replace records in the database
-Download archives using urls from database
 Tests for parsers
