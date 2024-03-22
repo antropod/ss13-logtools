@@ -9,7 +9,7 @@ def read_file(filename):
 
 def main():
     engine = create_engine("sqlite:///logs.sqlite")
-    sql_query = read_file("sql/jobs.sql")
+    sql_query = read_file("sql/changeling_powers.sql")
     with engine.connect() as conn:
         df = pd.read_sql(sql_query, conn, parse_dates="dt")
     df.to_excel("raw_data.xlsx", index=False)

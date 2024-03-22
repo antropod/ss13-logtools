@@ -40,14 +40,13 @@ def parse_directory_into_db(directory, session):
 
 
 def main():
-    engine = create_engine("sqlite:///logs.db")
+    engine = create_engine("sqlite:///logs.sqlite")
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    parse_directory_into_db("logs_manuel_2022", session)
-    # parse_manifest("logs_manuel_2022", "round-187324.zip", session)
+    parse_directory_into_db("logs", session)
 
 
 if __name__ == "__main__":

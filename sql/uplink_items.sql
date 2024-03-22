@@ -8,7 +8,7 @@ from (
         round_id,
         item,
         count(*) as purchases
-    from uplink_log
+    from uplink
     group by
         round_id, item
 )

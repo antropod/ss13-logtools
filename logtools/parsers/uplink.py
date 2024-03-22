@@ -45,7 +45,7 @@ class UplinkTxtParser(BaseParser):
                     discount=nullable_int(discount),
                     price=int(price),
                 )
-            elif type_ == "CHANGELING":
+            elif type_ == "UPLINK-CHANGELING" or type_ == "CHANGELING":
                 m = re.match(r"adapted the (.+?) power$", message)
                 if not m:
                     LOG.warning("Can't parse \"%s\"", message)
