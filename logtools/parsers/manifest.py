@@ -23,7 +23,7 @@ class ManifestTxtParser(BaseParser):
             line = line.rstrip('\n')
             if line.startswith(' -'):
                 continue
-            m = re.match(r"\[([^\]]+)\] (.+?) \\ (.+?) \\ (.+?) \\ (.+?) \\ (.+?)$", line)
+            m = re.match(r"\[([^\]]+)\] MANIFEST: (.+?) \\ (.+?) \\ (.+?) \\ (.+?) \\ (.+?)$", line)
             if not m:
                 LOG.warning("Can't parse %s", line)
                 continue
