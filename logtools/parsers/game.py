@@ -46,7 +46,7 @@ class GameTxtParser(BaseParser):
                     continue
 
             if category == "GAME-SAY":
-                m = re.match(r"([^/]+)/\(([^)]+)\) \(([^)]+)\) (?:\(([^)]+)\) )?\"([^\"]+)\" (FORCED by [^(]+ )?\((.*)\)$", message)
+                m = re.match(r"([^/]+)/\(([^()]+(?:\([^)]+\))?)\) \(([^)]+)\) (?:\(([^)]+)\) )?\"([^\"]+)\" (FORCED by [^(]+ )?\((.*)\)$", message)
                 if m:
                     ckey, mob_name, mob_id, reason, text, forced, location = m.groups()
                     if ckey == "*no key*":

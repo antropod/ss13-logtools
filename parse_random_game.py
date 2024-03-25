@@ -21,9 +21,7 @@ def main():
     parser = GameTxtParser()
     records = parser.parse_file_from_archive("logs", filename)
     for r in records:
-        if r.category == "GAME-SAY":
-            print(r)
-            pass
+        pass
 
 
 if __name__ == "__main__":

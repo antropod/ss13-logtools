@@ -1,7 +1,7 @@
 Tests for GAME-SAY parser
-"slime (302)" parsing
 config
 unified stats tool
+better parser that does not rely on regular expressions
 
 Partial updates when fetching urls
 Unified CLI tool
