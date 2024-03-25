@@ -2,7 +2,7 @@ import re
 import logging
 import datetime
 
-#from logtools.models.manifest import Game
+from logtools.models.game import GameSay
 from logtools.parsers.base import BaseParser
 from logtools.parsers.functions import parse_dt_string
 from dataclasses import dataclass
@@ -45,16 +45,38 @@ class GameTxtParser(BaseParser):
                         round_id = int(round_id_str)
                     continue
 
-            m = re.match(r"([^:]+): (.*)$", message)
-            if m:
-                subcategory, message = m.groups()
-            else:
-                subcategory = None
+            if category == "GAME-SAY":
+                m = re.match(r"([^/]+)/\(([^)]+)\) \(([^)]+)\) (?:\(([^)]+)\) )?\"([^\"]+)\" (FORCED by [^(]+ )?\((.*)\)$", message)
+                if m:
+                    ckey, mob_name, mob_id, reason, text, forced, location = m.groups()
+                    if ckey == "*no key*":
+                        ckey = None
 
-            yield Game(
-                round_id=round_id,
-                dt=parse_dt_string(dt),
-                category=category,
-                subcategory=subcategory,
-                message=message
-            )
+                    yield GameSay(
+                        round_id=round_id,
+                        dt=parse_dt_string(dt),
+                        ckey=ckey,
+                        mob_name=mob_name,
+                        mob_id=mob_id,
+                        reason=reason,
+                        text=text,
+                        forced=forced,
+                        location=location,
+                    )
+                else:
+                    LOG.error("Failed to parse GAME-SAY: %s", message)
+                continue
+
+            # m = re.match(r"([^:]+): (.*)$", message)
+            # if m:
+            #     subcategory, message = m.groups()
+            # else:
+            #     subcategory = None
+
+            # yield Game(
+            #     round_id=round_id,
+            #     dt=parse_dt_string(dt),
+            #     category=category,
+            #     subcategory=subcategory,
+            #     message=message
+            # )

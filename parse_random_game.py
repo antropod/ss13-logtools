@@ -15,27 +15,15 @@ def get_random_log(directory):
     return random.choice(files)
 
 
-def get_ckey_rounds(ckey):
-    records = (
-        Session()
-        .query(Manifest)
-        .filter(Manifest.ckey==ckey)
-        .order_by(Manifest.round_id)
-        .all()
-    )
-    return [r.round_id for r in records]
-
-
 def main():
-    rounds = get_ckey_rounds("")
-    round_id = rounds[0]
-    LOG.info("parsing round %s", round_id)
-    filename = f"round-{round_id}.zip"
+    filename = get_random_log("logs")
 
     parser = GameTxtParser()
     records = parser.parse_file_from_archive("logs", filename)
-    # for r in records:
-    #     print(r.category, r.subcategory, r.message)
+    for r in records:
+        if r.category == "GAME-SAY":
+            print(r)
+            pass
 
 
 if __name__ == "__main__":

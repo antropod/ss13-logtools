@@ -5,8 +5,10 @@ import io
 from logtools.models.meta import Base
 from logtools.models.uplink import Uplink, Changeling
 from logtools.models.manifest import Manifest
+from logtools.models.game import GameSay
 from logtools.parsers.manifest import ManifestTxtParser
 from logtools.parsers.uplink import UplinkTxtParser
+from logtools.parsers.game import GameTxtParser
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -23,13 +25,13 @@ def parse_one_filetype(parser, directory, archive_filename, session):
 
 
 def parse_into_db(directory, archive_filename, session):
-    parsers = [UplinkTxtParser(), ManifestTxtParser()]
+    parsers = [UplinkTxtParser(), ManifestTxtParser(), GameTxtParser()]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)
 
 
 def parse_directory_into_db(directory, session):
-    to_delete = [Uplink, Changeling, Manifest]
+    to_delete = [Uplink, Changeling, Manifest, GameSay]
     for model in to_delete:
         session.query(model).delete()
     session.commit()
