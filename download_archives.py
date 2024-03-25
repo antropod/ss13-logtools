@@ -66,8 +66,7 @@ def get_archives_from_db(model):
     response = Session()\
         .query(model)\
         .filter(
-            model.dt >= "2024-01-01",
-            model.server == "terry",
+            model.dt >= "2024-01-01"
         )\
         .order_by(model.round_id)\
         .all()
