@@ -13,6 +13,14 @@ dependencies = [
     "openpyxl",
 ]
 
+[build-system]
+requires = ["setuptools >= 69.0", "wheel", "Cython"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["logtools"]
+package-data = {"*" = ["*.pyx"]}
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--doctest-modules"
