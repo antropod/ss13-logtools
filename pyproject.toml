@@ -1,0 +1,22 @@
+[project]
+name = "ss13-logtools"
+description = "Log parser and analysis tool for /tg/ build of Space Station 13"
+version = "0.1"
+authors = [
+    {name = "antropod", email = "antropod@gmail.com"}
+]
+dependencies = [
+    "sqlalchemy",
+    "scrapy",
+    "requests",
+    "pandas",
+    "openpyxl",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--doctest-modules"
+testpaths = [
+    "logtools",
+    "tests",
+]
