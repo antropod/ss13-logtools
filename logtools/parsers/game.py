@@ -19,6 +19,28 @@ class Game:
     message: str
 
 
+RE_GAME_SAY = re.compile(r"([^/]+)/\(([^()]+(?:\([^)]+\))?)\) \(([^)]+)\) (?:\(([^)]+)\) )?\"([^\"]+)\" (?:FORCED by ([^(]+) )?\((.*)\)$")
+
+def _parse_game_say(message):
+    """
+    >>> _parse_game_say('RandomCkey/(Random Mob) (mob_3156) "AAAAAAAAAA" (AI Chamber (150,25,4))')
+    ('RandomCkey', 'Random Mob', 'mob_3156', None, 'AAAAAAAAAA', None, 'AI Chamber (150,25,4)')
+
+    >>> _parse_game_say('RandomCkey/(Random Mob) (mob_3156) (VOX Announcement) "vox_login" (AI Chamber (150,25,4))')
+    ('RandomCkey', 'Random Mob', 'mob_3156', 'VOX Announcement', 'vox_login', None, 'AI Chamber (150,25,4)')
+
+    >>> _parse_game_say('*no key*/(snow legion) (mob_456) "Why...?" FORCED by AI Controller (Icemoon Caves (255,218,3))')
+    (None, 'snow legion', 'mob_456', None, 'Why...?', 'AI Controller', 'Icemoon Caves (255,218,3)')
+    """
+    m = re.match(RE_GAME_SAY, message)
+    if m:
+        ckey, mob_name, mob_id, reason, text, forced, location = m.groups()
+        if ckey == "*no key*":
+            ckey = None
+        return ckey, mob_name, mob_id, reason, text, forced, location
+    return None
+
+
 class GameTxtParser(BaseParser):
 
     log_filename = "game.txt"
@@ -46,11 +68,9 @@ class GameTxtParser(BaseParser):
                     continue
 
             if category == "GAME-SAY":
-                m = re.match(r"([^/]+)/\(([^()]+(?:\([^)]+\))?)\) \(([^)]+)\) (?:\(([^)]+)\) )?\"([^\"]+)\" (FORCED by [^(]+ )?\((.*)\)$", message)
-                if m:
-                    ckey, mob_name, mob_id, reason, text, forced, location = m.groups()
-                    if ckey == "*no key*":
-                        ckey = None
+                v = _parse_game_say(message)
+                if v:
+                    ckey, mob_name, mob_id, reason, text, forced, location = v
 
                     yield GameSay(
                         round_id=round_id,
