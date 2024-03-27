@@ -2,6 +2,7 @@ data/
 .venv/
 logs*/
 dist/
+reports/
 
 *.egg-info
 *.sqlite
