@@ -53,11 +53,12 @@ class GameTxtParser(BaseParser):
             if line.startswith(' -') or line.startswith('-'):
                 continue
 
-            m = re.match(r"\[([^\]]+)\] ([A-Za-z-]+): (.*)$", line)
+            m = re.match(r"\[([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{3})\] ([A-Za-z-]+): (.*)$", line)
             if not m:
                 LOG.warning("Can't parse %s", line)
                 continue
-            dt, category, message = m.groups()
+            year, month, day, hour, minute, second, microsecond, category, message = m.groups()
+            dt = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), int(microsecond))
 
             if round_id is None:
                 m = re.match(r"Round ID: (\d+)$", message)
@@ -74,7 +75,7 @@ class GameTxtParser(BaseParser):
 
                     yield GameSay(
                         round_id=round_id,
-                        dt=parse_dt_string(dt),
+                        dt=dt,
                         ckey=ckey,
                         mob_name=mob_name,
                         mob_id=mob_id,
