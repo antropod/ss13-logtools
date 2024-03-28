@@ -1,8 +1,9 @@
-data/
 .venv/
-logs*/
-dist/
+.pytest_cache/
 build/
+data/
+dist/
+logs/
 reports/
 
 *.egg-info
