@@ -12,3 +12,5 @@ reports/
 *.pyc
 *.txt
 *.json
+*.lprof
+*.7z

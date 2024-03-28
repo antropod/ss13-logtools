@@ -1,6 +1,7 @@
 import os
 import logging
 import io
+from tqdm import tqdm
 
 from logtools.models.meta import Base
 from logtools.models.uplink import Uplink, Changeling
@@ -14,7 +15,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.CRITICAL, format='[%(asctime)s] - %(levelname)s - %(message)s')
 LOG = logging.getLogger(__name__)
 
 
@@ -36,7 +37,7 @@ def parse_directory_into_db(directory, session):
         session.query(model).delete()
     session.commit()
 
-    for archive_filename in os.listdir(directory):
+    for archive_filename in tqdm(os.listdir(directory)):
         LOG.info("Parsing %s", archive_filename)
         parse_into_db(directory, archive_filename, session)
 

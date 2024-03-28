@@ -19,7 +19,8 @@ class Game:
     message: str
 
 
-RE_GAME_SAY = re.compile(r"([^/]+)/\(([^()]+(?:\([^)]+\))?)\) \(([^)]+)\) (?:\(([^)]+)\) )?\"([^\"]+)\" (?:FORCED by ([^(]+) )?\((.*)\)$")
+RE_GAME_MESSAGE = re.compile(r"\[([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{3})\] ([A-Za-z-]+): (.*)$")
+RE_GAME_SAY = re.compile(r"(.+?)/\((.+?)\) \((.+?)\) (?:\((.+?)\) )?\"(.+?)\" (?:FORCED by (.+?) )?\((.+?)\)$")
 
 def _parse_game_say(message):
     """
@@ -31,6 +32,9 @@ def _parse_game_say(message):
 
     >>> _parse_game_say('*no key*/(snow legion) (mob_456) "Why...?" FORCED by AI Controller (Icemoon Caves (255,218,3))')
     (None, 'snow legion', 'mob_456', None, 'Why...?', 'AI Controller', 'Icemoon Caves (255,218,3)')
+
+    >>> _parse_game_say('ToastGoats/(D.A.N.I.E.L) (mob_3381) (HOLOPAD in Captains Office (84,132,3)) "Yes hello" (AI Chamber (190,36,3))')
+    ('ToastGoats', 'D.A.N.I.E.L', 'mob_3381', 'HOLOPAD in Captains Office (84,132,3)', 'Yes hello', None, 'AI Chamber (190,36,3)')
     """
     m = re.match(RE_GAME_SAY, message)
     if m:
@@ -53,7 +57,7 @@ class GameTxtParser(BaseParser):
             if line.startswith(' -') or line.startswith('-'):
                 continue
 
-            m = re.match(r"\[([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{3})\] ([A-Za-z-]+): (.*)$", line)
+            m = re.match(RE_GAME_MESSAGE, line)
             if not m:
                 LOG.warning("Can't parse %s", line)
                 continue
@@ -87,17 +91,3 @@ class GameTxtParser(BaseParser):
                 else:
                     LOG.error("Failed to parse GAME-SAY: %s", message)
                 continue
-
-            # m = re.match(r"([^:]+): (.*)$", message)
-            # if m:
-            #     subcategory, message = m.groups()
-            # else:
-            #     subcategory = None
-
-            # yield Game(
-            #     round_id=round_id,
-            #     dt=parse_dt_string(dt),
-            #     category=category,
-            #     subcategory=subcategory,
-            #     message=message
-            # )
