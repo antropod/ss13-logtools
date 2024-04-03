@@ -3,7 +3,7 @@ import logging
 import datetime
 
 from logtools.models.game import GameSay
-from logtools.parsers.base import BaseParser
+from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE
 from logtools.parsers.functions import parse_dt_string
 from dataclasses import dataclass
 
@@ -19,7 +19,6 @@ class Game:
     message: str
 
 
-RE_GAME_MESSAGE = re.compile(r"\[([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{3})\] ([A-Za-z-]+): (.*)$")
 RE_GAME_SAY = re.compile(r"(.+?)/\((.+?)\) \((.+?)\) (?:\((.+?)\) )?\"(.+?)\" (?:FORCED by (.+?) )?\((.+?)\)$")
 
 def _parse_game_say(message):
