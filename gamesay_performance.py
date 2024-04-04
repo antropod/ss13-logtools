@@ -21,27 +21,17 @@ logging.basicConfig(level=logging.CRITICAL, format='[%(asctime)s] - %(levelname)
 LOG = logging.getLogger(__name__)
 
 
-def parse_one_filetype(parser, directory, archive_filename, session):
-    for record in parser.parse_file_from_archive(directory, archive_filename):
-        session.add(record)
-    session.commit()
-
-
-def parse_into_db(directory, archive_filename, session):
-    parsers = [UplinkTxtParser(), ManifestTxtParser(), RuntimeTxtParser()]
-    for parser in parsers:
-        parse_one_filetype(parser, directory, archive_filename, session)
-
-
 def parse_directory_into_db(directory, session):
     to_delete = [Uplink, Changeling, Manifest, GameSay, MapInfo]
     for model in to_delete:
         session.query(model).delete()
     session.commit()
 
+    parser = GameTxtParser()
     for archive_filename in tqdm(os.listdir(directory)):
-        LOG.info("Parsing %s", archive_filename)
-        parse_into_db(directory, archive_filename, session)
+        for record in parser.parse_file_from_archive(directory, archive_filename):
+            session.add(record)
+    session.commit()
 
 
 def main():
