@@ -2,8 +2,8 @@ import re
 import logging
 import sys
 
-from logtools.models.uplink import Uplink, Changeling
-from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE
+from logtools.models.uplink import Uplink, Changeling, Spell
+from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, Skip
 from logtools.parsers.functions import parse_dt_string, nullable_int
 import datetime
 from logtools.parsers.functions import nullable_int
@@ -78,6 +78,19 @@ def _parse_changeling(message):
     return None
 
 
+RE_SPELL = re.compile(r"(.+?)/\((.+?)\) (?:learned|bought|cast|refunded) (.+) for (\d+) points$")
+RE_SPELL_UPGRADE = re.compile(r"(.+?)/\((.+?)\) improved their knowledge of (.+) to level (\d+) for (\d+) points$")
+
+def _parse_spell(message):
+    """
+    >>> _parse_spell("UwUer/(Lumi The White) learned Rod Form for 2 points")
+    ('UwUer', 'Lumi The White', 'Rod Form', '2')
+    """
+    if m:= re.match(RE_SPELL, message):
+        return m.groups()
+    if m:= re.match(RE_SPELL_UPGRADE, message):
+        return Skip
+
 class UplinkTxtParser(BaseParser):
 
     log_filename = "uplink.txt"
@@ -134,7 +147,22 @@ class UplinkTxtParser(BaseParser):
                     LOG.warning("Can't parse %s", line)
 
             elif category == "UPLINK-SPELL":
-                pass
+                r = _parse_spell(message)
+                if r:
+                    if r is Skip:
+                        continue
+                    ckey, name, spell, price = r
+                    yield Spell(
+                        round_id=round_id,
+                        dt=dt,
+                        ckey=ckey,
+                        name=name,
+                        spell=spell,
+                        price=price,
+                    )
+                else:
+                    LOG.warning("Can't parse %s", line)
+                    sys.exit(0)
             elif category == "UPLINK-HERETIC":
                 pass
             elif category == "UPLINK-MALF":

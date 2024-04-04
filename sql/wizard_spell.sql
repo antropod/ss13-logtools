@@ -1,15 +1,15 @@
 select
-    power,
+    spell,
     count(*) as rounds,
     sum(purchases) as purchases
 from (
     select
         round_id,
-        power,
+        spell,
         count(*) as purchases
-    from changeling
+    from wizard_spell
     group by
-        round_id, power
+        round_id, spell
 )
-group by power
+group by spell
 order by rounds desc

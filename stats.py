@@ -39,7 +39,13 @@ def make_reports():
     make_report("antag_rates", "antag_rates")
     make_report("saylog", "saylog")
     make_report("map_pivot", "map_pivot")
-    make_report("uplink", "uplink_items", "uplink_nukeops", "changeling_powers")
+    make_report(
+        "uplink",
+        "uplink_items",
+        "uplink_nukeops",
+        "changeling_powers",
+        "wizard_spell",
+    )
 
 
 def main():

@@ -27,3 +27,9 @@ class BaseParser:
             LOG.error("Failed to open %s:%s - %s", archive_filename, self.log_filename, str(exc))
         except BadZipFile as exc:
             LOG.error("Failed to open %s - %s", archive_filename, str(exc))
+
+
+class _Skip:
+    pass
+
+Skip = _Skip()
