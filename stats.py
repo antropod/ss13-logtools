@@ -45,6 +45,7 @@ def make_reports():
         "uplink_nukeops",
         "changeling_powers",
         "wizard_spell",
+        "malf_powers",
     )
 
 

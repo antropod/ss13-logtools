@@ -2,7 +2,7 @@ import re
 import logging
 import sys
 
-from logtools.models.uplink import Uplink, Changeling, Spell
+from logtools.models.uplink import Uplink, Changeling, Spell, Malf
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, Skip
 from logtools.parsers.functions import parse_dt_string, nullable_int
 import datetime
@@ -96,6 +96,17 @@ def _parse_spell(message):
     if m:= re.match(RE_SPELL_UPGRADE, message):
         return Skip
 
+
+RE_MALF_POWER = re.compile(r"(.+?)/\((.+?)\) purchased (.+)$")
+
+def _parse_malf(message):
+    """
+    >>> _parse_malf("UnparalleledNovelty/(SHODAN) purchased Reactivate Camera Network")
+    ('UnparalleledNovelty', 'SHODAN', 'Reactivate Camera Network')
+    """
+    if m:= re.match(RE_MALF_POWER, message):
+        return m.groups()
+
 class UplinkTxtParser(BaseParser):
 
     log_filename = "uplink.txt"
@@ -167,10 +178,23 @@ class UplinkTxtParser(BaseParser):
                     )
                 else:
                     LOG.warning("Can't parse %s", line)
+            elif category == "UPLINK-MALF":
+                r = _parse_malf(message)
+                if r is Skip:
+                    continue
+                if r:
+                    ckey, name, power = r
+                    yield Malf(
+                        round_id=round_id,
+                        dt=dt,
+                        ckey=ckey,
+                        name=name,
+                        power=power,
+                    )
+                else:
+                    LOG.warning("Can't parse %s", line)
                     sys.exit(0)
             elif category == "UPLINK-HERETIC":
-                pass
-            elif category == "UPLINK-MALF":
                 pass
             elif category == "UPLINK-SPY":
                 pass
