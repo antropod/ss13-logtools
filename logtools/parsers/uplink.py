@@ -120,7 +120,7 @@ class UplinkTxtParser(BaseParser):
                 r = _parse_uplink(message)
                 if r is Skip:
                     continue
-                if r and len(r) == 6:
+                if r:
                     ckey, name, item, discount, price, uplink_name = r
                     uplink_type=_guess_uplink_type(uplink_name)
 
