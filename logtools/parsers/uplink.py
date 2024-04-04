@@ -27,17 +27,20 @@ def _parse_uplink(message):
     ('RandomCkey', 'Random Name', 'Radioactive Microlaser', '33', '2', 'the uplink implant')
 
     >>> _parse_uplink("RandomCKey/(Random Name) loaded 1 telecrystals into the station bounced radio's uplink")
-    ('RandomCKey', 'Random Name', '1')
+    Skip
+
+    >>> _parse_uplink("Germo555/(Zee-Lanp) purchased a random uplink item from Zee-Lanp's uplink with 2 telecrystals remaining")
+    Skip
     """
     m = RE_UPLINK_PURCHASE.match(message)
     if m:
         return m.groups()
     m = RE_UPLINK_LOAD_TC.match(message)
     if m:
-        return m.groups()
+        return Skip
     m = RE_UPLINK_RANDOM_ITEM.match(message)
     if m:
-        return m.groups()
+        return Skip
     return None
 
 
@@ -115,6 +118,8 @@ class UplinkTxtParser(BaseParser):
             dt = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), int(microsecond))
             if category == "UPLINK":
                 r = _parse_uplink(message)
+                if r is Skip:
+                    continue
                 if r and len(r) == 6:
                     ckey, name, item, discount, price, uplink_name = r
                     uplink_type=_guess_uplink_type(uplink_name)
@@ -129,8 +134,6 @@ class UplinkTxtParser(BaseParser):
                         price=nullable_int(price),
                         uplink_type=uplink_type,
                     )
-                elif r and len(r) == 3:
-                    continue  # skip loading telecrystals into uplink
                 else:
                     LOG.warning("Can't parse %s", line)
 
@@ -152,8 +155,7 @@ class UplinkTxtParser(BaseParser):
                 r = _parse_spell(message)
                 if r:
                     if r is Skip:
-                        LOG.warning("Can't parse %s", line)
-                        sys.exit(0)
+                        continue
                     ckey, name, spell, price = r
                     yield Spell(
                         round_id=round_id,
