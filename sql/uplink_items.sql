@@ -9,11 +9,9 @@ from (
         item,
         count(*) as purchases
     from uplink
+    where uplink_type not in ('debug', 'nukeops')
     group by
         round_id, item
 )
 group by item
 order by rounds desc;
-
--- select count(distinct round_id)
--- from uplink_log;

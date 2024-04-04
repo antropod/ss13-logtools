@@ -19,6 +19,7 @@ class Uplink(Base):
     item = Column(String)
     discount = Column(Integer)
     price = Column(Integer)
+    uplink_type = Column(String)
 
     def __repr__(self) -> str:
         return f"<Uplink("\

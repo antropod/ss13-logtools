@@ -12,9 +12,9 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 LOG = logging.getLogger(__name__)
 
 
-def get_random_log(directory):
+def get_random_sample(directory, sample=1):
     files = os.listdir(directory)
-    return random.choice(files)
+    return random.sample(files, k=sample)
 
 
 def get_sample_logs(directory):
@@ -24,11 +24,10 @@ def get_sample_logs(directory):
 
 def main():
     parser = UplinkTxtParser()
-    filename = get_random_log("logs")
-
-    records = parser.parse_file_from_archive("logs", filename)
-    for r in records:
-        pass
+    for filename in get_random_sample("logs", 4000):
+        records = parser.parse_file_from_archive("logs", filename)
+        for r in records:
+            pass
 
 
 if __name__ == "__main__":

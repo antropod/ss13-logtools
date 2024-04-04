@@ -1,12 +1,64 @@
 import re
 import logging
+import sys
 
 from logtools.models.uplink import Uplink, Changeling
-from logtools.parsers.base import BaseParser
+from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE
 from logtools.parsers.functions import parse_dt_string, nullable_int
-
+import datetime
+from logtools.parsers.functions import nullable_int
 
 LOG = logging.getLogger(__name__)
+
+RE_UPLINK_PURCHASE = re.compile(r"(.+?)/\((.+?)\) purchased (.+?) (?:\((\d+)% off!\) )?for (\d+) telecrystals from (?:ï¿½)?(.*)'s uplink$")
+RE_UPLINK_LOAD_TC = re.compile(r"(.+?)/\((.+?)\) loaded (\d+) telecrystals into .+ uplink$")
+RE_UPLINK_RANDOM_ITEM = re.compile(r"(.+?)/\((.+?)\) purchased a random uplink item from .+ uplink with (\d+) telecrystals remaining$")
+
+
+def _parse_uplink(message):
+    """
+    >>> _parse_uplink("RandomCkey/(Random Clown Name) purchased Banana Cream Pie Cannon for 10 telecrystals from Random Clown Name (Clown)'s uplink")
+    ('RandomCkey', 'Random Clown Name', 'Banana Cream Pie Cannon', None, '10', 'Random Clown Name (Clown)')
+
+    >>> _parse_uplink("RandomCkey/(Random Name) purchased Super Pointy Tape for 1 telecrystals from 's uplink")
+    ('RandomCkey', 'Random Name', 'Super Pointy Tape', None, '1', '')
+
+    >>> _parse_uplink("RandomCkey/(Random Name) purchased Radioactive Microlaser (33% off!) for 2 telecrystals from the uplink implant's uplink")
+    ('RandomCkey', 'Random Name', 'Radioactive Microlaser', '33', '2', 'the uplink implant')
+
+    >>> _parse_uplink("RandomCKey/(Random Name) loaded 1 telecrystals into the station bounced radio's uplink")
+    ('RandomCKey', 'Random Name', '1')
+    """
+    m = RE_UPLINK_PURCHASE.match(message)
+    if m:
+        return m.groups()
+    m = RE_UPLINK_LOAD_TC.match(message)
+    if m:
+        return m.groups()
+    m = RE_UPLINK_RANDOM_ITEM.match(message)
+    if m:
+        return m.groups()
+    return None
+
+
+def _guess_uplink_type(uplink_name):
+    if '(' in uplink_name and ')' in uplink_name or 'PDA' in uplink_name:
+        return "pda"
+    elif "station bounced radio" in uplink_name:
+        return "nukeops"
+    elif "uplink implant" in uplink_name:
+        return "implant"
+    elif 'pen' in uplink_name:
+        return "pen"
+    elif 'headset' in uplink_name:
+        return "headset"
+    elif uplink_name == '':
+        return "unknown"
+    elif uplink_name == 'the debug uplink' or uplink_name == "the debug nuclear uplink":
+        return "debug"
+    else:
+        LOG.warning("Unknown uplink type: %s", uplink_name)
+
 
 class UplinkTxtParser(BaseParser):
 
@@ -22,42 +74,43 @@ class UplinkTxtParser(BaseParser):
             line = line.rstrip('\n')
             if line.startswith(' -'):
                 continue
-            m = re.match(r"\[([^\]]+)\] ([^:]+): ([^/]+)/\((.+)\) ((?:purchased|adapted) .*)$", line)
+            m = re.match(RE_GAME_MESSAGE, line)
             if not m:
                 LOG.warning("Can't parse %s", line)
                 continue
-            dt, type_, ckey, name, message = m.groups()
-            dt = parse_dt_string(dt)
-            if type_ == "UPLINK":
-                m = re.match(r"purchased (.+?)(?: \(([\d]+)% off!\))? for (\d+) telecrystals from (.*)'s uplink$", message)
-                if not m:
-                    LOG.warning("Can't parse \"%s\"", message)
-                    continue
+            year, month, day, hour, minute, second, microsecond, category, message = m.groups()
+            dt = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), int(microsecond))
+            if category == "UPLINK":
+                r = _parse_uplink(message)
+                if r and len(r) == 6:
+                    ckey, name, item, discount, price, uplink_name = r
+                    uplink_type=_guess_uplink_type(uplink_name)
 
-                item, discount, price, _source = m.groups()
-
-                yield Uplink(
-                    round_id=round_id,
-                    dt=dt,
-                    ckey=ckey,
-                    name=name,
-                    item=item,
-                    discount=nullable_int(discount),
-                    price=int(price),
-                )
-            elif type_ == "UPLINK-CHANGELING" or type_ == "CHANGELING":
-                m = re.match(r"adapted the (.+?) power$", message)
-                if not m:
-                    LOG.warning("Can't parse \"%s\"", message)
-                    continue
-                power, = m.groups()
-                yield Changeling(
-                    round_id=round_id,
-                    dt=dt,
-                    ckey=ckey,
-                    name=name,
-                    power=power
-                )
+                    yield Uplink(
+                        round_id=round_id,
+                        dt=dt,
+                        ckey=ckey,
+                        name=name,
+                        item=item,
+                        discount=nullable_int(discount),
+                        price=nullable_int(price),
+                        uplink_type=uplink_type,
+                    )
+                elif r and len(r) == 3:
+                    continue  # skip loading telecrystals into uplink
+                else:
+                    LOG.warning("Can't parse %s", line)
+                    
+            elif category == "UPLINK-HERETIC":
+                pass
+            elif category == "UPLINK-CHANGELING":
+                pass
+            elif category == "UPLINK-MALF":
+                pass
+            elif category == "UPLINK-SPELL":
+                pass
+            elif category == "UPLINK-SPY":
+                pass
             else:
-                LOG.warning("Message type: \"%s\" is not supported", type_)
+                LOG.warning("Can't parse %s", line)
                 continue
