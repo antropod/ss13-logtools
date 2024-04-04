@@ -1,6 +1,5 @@
 
 select
-    ROW_NUMBER() OVER () as '#',
     power,
     rounds,
     purchases

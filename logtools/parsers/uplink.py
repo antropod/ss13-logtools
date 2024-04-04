@@ -54,10 +54,28 @@ def _guess_uplink_type(uplink_name):
         return "headset"
     elif uplink_name == '':
         return "unknown"
-    elif uplink_name == 'the debug uplink' or uplink_name == "the debug nuclear uplink":
+    elif "debug" in uplink_name:
         return "debug"
     else:
         LOG.warning("Unknown uplink type: %s", uplink_name)
+
+
+RE_CHANGELING_ADAPT = re.compile(r"(.+?)/\((.+?)\) adapted the (.+) power$")
+RE_CHANGELING_READAPT = re.compile(r"(.+?)/\((.+?)\) readapted their changeling powers$")
+
+def _parse_changeling(message):
+    """
+    >>> _parse_changeling("RandomCKey/(Random Name) adapted the Anatomic Panacea power")
+    ('RandomCKey', 'Random Name', 'Anatomic Panacea')
+
+    >>> _parse_changeling("Livrah/(Boris Mahnov) readapted their changeling powers")
+    ('Livrah', 'Boris Mahnov', 'READAPTED')
+    """
+    if m:= re.match(RE_CHANGELING_ADAPT, message):
+        return m.groups()
+    if m:= re.match(RE_CHANGELING_READAPT, message):
+        return m.groups() + ("READAPTED",)
+    return None
 
 
 class UplinkTxtParser(BaseParser):
@@ -100,14 +118,26 @@ class UplinkTxtParser(BaseParser):
                     continue  # skip loading telecrystals into uplink
                 else:
                     LOG.warning("Can't parse %s", line)
-                    
+
+            elif category == "UPLINK-CHANGELING":
+                r = _parse_changeling(message)
+                if r:
+                    ckey, name, power = r
+                    yield Changeling(
+                        round_id=round_id,
+                        dt=dt,
+                        ckey=ckey,
+                        name=name,
+                        power=power,
+                    )
+                else:
+                    LOG.warning("Can't parse %s", line)
+
+            elif category == "UPLINK-SPELL":
+                pass
             elif category == "UPLINK-HERETIC":
                 pass
-            elif category == "UPLINK-CHANGELING":
-                pass
             elif category == "UPLINK-MALF":
-                pass
-            elif category == "UPLINK-SPELL":
                 pass
             elif category == "UPLINK-SPY":
                 pass

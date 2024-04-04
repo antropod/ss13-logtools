@@ -6,40 +6,40 @@ from common import create_default_engine
 from logtools.util import read_file
 from openpyxl import Workbook
 
+engine = create_default_engine()
+
 
 SQL_DIR = "sql"
 REPORTS_DIR = "reports"
-STATS = [
-    ("antag_rates.sql", "antag_rates.xlsx"),
-    ("saylog.sql", "saylog.xlsx"),
-    ("map_pivot.sql", "map_pivot.xlsx"),
-]
+
+
+def make_report(name, report_name, *report_names):
+    print(f"Making report {name}")
+    excel_filename = os.path.join(REPORTS_DIR, name + ".xlsx")
+    report_names = (report_name,) + report_names
+
+    with engine.connect() as conn:
+        df_list = []
+        for report_name in report_names:
+            sql_filename = os.path.join(SQL_DIR, report_name + '.sql')
+            query = read_file(sql_filename)
+            df = pd.read_sql(query, conn, parse_dates="dt")
+            df_list.append(df)
+
+
+    with pd.ExcelWriter(excel_filename) as writer:
+        for df, report_name in zip(df_list, report_names):
+            df.to_excel(writer, sheet_name=report_name, index=False)
 
 
 def make_reports():
     if not os.path.exists(REPORTS_DIR):
         os.mkdir(REPORTS_DIR)
 
-    engine = create_default_engine()
-
-
-    for sql_filename, excel_filename in STATS:
-        sql_filename = os.path.join(SQL_DIR, sql_filename)
-        excel_filename = os.path.join(REPORTS_DIR, excel_filename)
-        print(f"Processing {sql_filename} -> {excel_filename}")
-        sql_query = read_file(sql_filename)
-        with engine.connect() as conn:
-            df = pd.read_sql(sql_query, conn, parse_dates="dt")
-        df.to_excel(excel_filename, index=False)
-
-    # sql_filename = os.path.join(SQL_DIR, "map_pivot.sql")
-    # excel_filename = os.path.join(REPORTS_DIR, "map_pivot.xlsx")
-    # print(f"Processing {sql_filename} -> {excel_filename}")
-    # sql_query = read_file(sql_filename)
-    # with engine.connect() as conn:
-    #     df = pd.read_sql(sql_query, conn, parse_dates="dt")
-    # df = df.pivot(index="map_name", columns="server", values="rounds")
-    # df.to_excel(excel_filename)
+    make_report("antag_rates", "antag_rates")
+    make_report("saylog", "saylog")
+    make_report("map_pivot", "map_pivot")
+    make_report("uplink", "uplink_items", "uplink_nukeops", "changeling_powers")
 
 
 def main():
