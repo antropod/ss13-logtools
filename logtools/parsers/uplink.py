@@ -85,6 +85,8 @@ def _parse_spell(message):
     """
     >>> _parse_spell("UwUer/(Lumi The White) learned Rod Form for 2 points")
     ('UwUer', 'Lumi The White', 'Rod Form', '2')
+    >>> _parse_spell("Goblinman221/(Granddalf The Daddest) improved their knowledge of Forcewall to level 2 for 1 points")
+    Skip
     """
     if m:= re.match(RE_SPELL, message):
         return m.groups()
@@ -150,7 +152,8 @@ class UplinkTxtParser(BaseParser):
                 r = _parse_spell(message)
                 if r:
                     if r is Skip:
-                        continue
+                        LOG.warning("Can't parse %s", line)
+                        sys.exit(0)
                     ckey, name, spell, price = r
                     yield Spell(
                         round_id=round_id,

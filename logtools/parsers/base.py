@@ -30,6 +30,9 @@ class BaseParser:
 
 
 class _Skip:
-    pass
+    
+    def __repr__(self):
+        return "Skip"
+
 
 Skip = _Skip()
