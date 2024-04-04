@@ -46,6 +46,7 @@ def make_reports():
         "changeling_powers",
         "wizard_spell",
         "malf_powers",
+        "heretic_knowledge",
     )
 
 

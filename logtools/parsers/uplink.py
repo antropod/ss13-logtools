@@ -2,7 +2,7 @@ import re
 import logging
 import sys
 
-from logtools.models.uplink import Uplink, Changeling, Spell, Malf
+from logtools.models.uplink import Uplink, Changeling, Spell, Malf, Heretic
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, Skip
 from logtools.parsers.functions import parse_dt_string, nullable_int
 import datetime
@@ -107,6 +107,36 @@ def _parse_malf(message):
     if m:= re.match(RE_MALF_POWER, message):
         return m.groups()
 
+
+RE_HERETIC_KNOWLEDGE = re.compile(r"(.+?)/\((.+?)\) gained knowledge: (.+)$")
+RE_HERETIC_RITUAL = re.compile(r"(.+?)/\((.+?)\) completed a Ritual of Knowledge at (.+)\.$")
+RE_HERETIC_FINAL = re.compile(r"(.+?)/\((.+?)\) gained knowledge of their final ritual at (.+)\. They have (\d+) knowledge nodes researched, totalling (\d+) points and have sacrificed (\d+) people \((\d+) of which were high value\)$")
+RE_HERETIC_FINAL_COMPLETE =re.compile(r"(.+?)/\((.+?)\) completed their final ritual at (.+)\.$")
+
+def _parse_heretic(message):
+    """
+    >>> _parse_heretic("MrShimbob/(Heinz Ryker) gained knowledge: Principle of Hunger")
+    ('MrShimbob', 'Heinz Ryker', 'Principle of Hunger')
+
+    >>> _parse_heretic("Tortgamer/(Brady Edwards) completed a Ritual of Knowledge at 00:44:13.")
+    Skip
+
+    >>> _parse_heretic("Chimpston/(Krakaahsje Vitche II) gained knowledge of their final ritual at 01:07:37. They have 21 knowledge nodes researched, totalling 18 points and have sacrificed 4 people (1 of which were high value)")
+    Skip
+
+    >>> _parse_heretic("Kidgenius702/(Jose Shah) completed their final ritual at 01:34:07.")
+    Skip
+    """
+    if m:= re.match(RE_HERETIC_KNOWLEDGE, message):
+        return m.groups()
+    if m:= re.match(RE_HERETIC_RITUAL, message):
+        return Skip
+    if m:= re.match(RE_HERETIC_FINAL, message):
+        return Skip
+    if m:= re.match(RE_HERETIC_FINAL_COMPLETE, message):
+        return Skip
+
+
 class UplinkTxtParser(BaseParser):
 
     log_filename = "uplink.txt"
@@ -193,9 +223,21 @@ class UplinkTxtParser(BaseParser):
                     )
                 else:
                     LOG.warning("Can't parse %s", line)
-                    sys.exit(0)
             elif category == "UPLINK-HERETIC":
-                pass
+                r = _parse_heretic(message)
+                if r is Skip:
+                    continue
+                if r:
+                    ckey, name, knowledge = r
+                    yield Heretic(
+                        round_id=round_id,
+                        dt=dt,
+                        ckey=ckey,
+                        name=name,
+                        knowledge=knowledge,
+                    )
+                else:
+                    LOG.warning("Can't parse %s", line)
             elif category == "UPLINK-SPY":
                 pass
             else:

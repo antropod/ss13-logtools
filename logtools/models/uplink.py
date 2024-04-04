@@ -89,3 +89,22 @@ class Malf(Base):
                 f"ckey={self.ckey!r}, "\
                 f"name={self.name!r}, "\
                 f"power={self.power!r})"
+
+
+class Heretic(Base):
+    __tablename__ = "heretic"
+
+    id = Column(Integer, primary_key=True)
+    round_id = Column(Integer)
+    dt = Column(DateTime)
+    ckey = Column(String)
+    name = Column(String)
+    knowledge = Column(String)
+
+    def __repr__(self) -> str:
+        return f"Heretic("\
+                f"round_id={self.round_id!r}, "\
+                f"dt={self.dt!r}, "\
+                f"ckey={self.ckey!r}, "\
+                f"name={self.name!r}, "\
+                f"knowledge={self.power!r})"
