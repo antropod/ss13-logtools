@@ -4,11 +4,7 @@ import io
 from tqdm import tqdm
 
 from logtools.models import *
-from logtools.parsers.manifest import ManifestTxtParser
-from logtools.parsers.uplink import UplinkTxtParser
-from logtools.parsers.game import GameTxtParser
-from logtools.parsers.runtime import RuntimeTxtParser
-from logtools.parsers.cargo import CargoHtmlParser
+from logtools.parsers import *
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

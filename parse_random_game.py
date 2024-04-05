@@ -3,11 +3,9 @@ import random
 from common import Session
 import logging
 
-from logtools.parsers.cargo import CargoHtmlParser
-from logtools.parsers.game import GameTxtParser
-from logtools.parsers.runtime import RuntimeTxtParser
-from logtools.parsers.uplink import UplinkTxtParser
 from logtools.models import *
+from logtools.parsers import *
+
 
 logging.basicConfig(level=logging.CRITICAL, format='%(message)s')
 LOG = logging.getLogger(__name__)
