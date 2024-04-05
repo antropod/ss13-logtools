@@ -48,6 +48,7 @@ def make_reports():
         "malf_powers",
         "heretic_knowledge",
     )
+    make_report("cargo_orders", "cargo_orders")
 
 
 def main():

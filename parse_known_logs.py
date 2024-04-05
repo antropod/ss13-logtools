@@ -12,6 +12,7 @@ from logtools.parsers.manifest import ManifestTxtParser
 from logtools.parsers.uplink import UplinkTxtParser
 from logtools.parsers.game import GameTxtParser
 from logtools.parsers.runtime import RuntimeTxtParser
+from logtools.parsers.cargo import CargoHtmlParser
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -28,7 +29,7 @@ def parse_one_filetype(parser, directory, archive_filename, session):
 
 
 def parse_into_db(directory, archive_filename, session):
-    parsers = [UplinkTxtParser(), ManifestTxtParser(), RuntimeTxtParser()]
+    parsers = [UplinkTxtParser(), ManifestTxtParser(), RuntimeTxtParser(), CargoHtmlParser()]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)
 

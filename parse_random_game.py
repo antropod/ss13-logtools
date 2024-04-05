@@ -3,6 +3,7 @@ import random
 from common import Session
 import logging
 
+from logtools.parsers.cargo import CargoHtmlParser
 from logtools.parsers.game import GameTxtParser
 from logtools.parsers.runtime import RuntimeTxtParser
 from logtools.models.manifest import Manifest
@@ -23,8 +24,8 @@ def get_sample_logs(directory):
 
 
 def main():
-    parser = UplinkTxtParser()
-    for filename in get_random_sample("logs", 4000):
+    parser = CargoHtmlParser()
+    for filename in get_random_sample("logs", 100):
         records = parser.parse_file_from_archive("logs", filename)
         for r in records:
             pass
