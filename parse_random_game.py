@@ -6,8 +6,8 @@ import logging
 from logtools.parsers.cargo import CargoHtmlParser
 from logtools.parsers.game import GameTxtParser
 from logtools.parsers.runtime import RuntimeTxtParser
-from logtools.models.manifest import Manifest
 from logtools.parsers.uplink import UplinkTxtParser
+from logtools.models import *
 
 logging.basicConfig(level=logging.CRITICAL, format='%(message)s')
 LOG = logging.getLogger(__name__)

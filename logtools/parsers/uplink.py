@@ -2,7 +2,7 @@ import re
 import logging
 import sys
 
-from logtools.models.uplink import Uplink, Changeling, Spell, Malf, Heretic
+from logtools.models import Uplink, Changeling, Spell, Malf, Heretic
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo, Skip
 from logtools.parsers.functions import parse_dt_string, nullable_int
 import datetime

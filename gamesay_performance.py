@@ -3,11 +3,7 @@ import logging
 import io
 from tqdm import tqdm
 
-from logtools.models.meta import Base
-from logtools.models.uplink import Uplink, Changeling
-from logtools.models.manifest import Manifest
-from logtools.models.game import GameSay
-from logtools.models.mapinfo import MapInfo
+from logtools.models import *
 from logtools.parsers.manifest import ManifestTxtParser
 from logtools.parsers.uplink import UplinkTxtParser
 from logtools.parsers.game import GameTxtParser

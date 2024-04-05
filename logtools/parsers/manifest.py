@@ -1,7 +1,7 @@
 import re
 import logging
 
-from logtools.models.manifest import Manifest
+from logtools.models import Manifest
 from logtools.parsers.base import BaseParser, ExternalInfo
 from logtools.parsers.functions import parse_dt_string
 

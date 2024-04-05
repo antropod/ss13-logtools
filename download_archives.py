@@ -12,7 +12,7 @@ from functools import partial
 import requests
 
 from common import Session
-from logtools.models.round_archive_url import RoundArchiveUrl
+from logtools.models import RoundArchiveUrl
 
 socket.setdefaulttimeout(10)
 

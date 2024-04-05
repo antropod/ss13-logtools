@@ -3,7 +3,7 @@ import logging
 import datetime
 import sys
 
-from logtools.models.cargo import CargoShippedOrder
+from logtools.models import CargoShippedOrder
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo
 
 

@@ -4,7 +4,7 @@ import datetime
 
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, RE_DT, ExternalInfo
 from logtools.parsers.functions import parse_dt_string
-from logtools.models.mapinfo import MapInfo
+from logtools.models import MapInfo
 from dataclasses import dataclass
 
 

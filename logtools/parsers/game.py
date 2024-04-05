@@ -2,7 +2,7 @@ import re
 import logging
 import datetime
 
-from logtools.models.game import GameSay
+from logtools.models import GameSay
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo
 from logtools.parsers.functions import parse_dt_string
 from dataclasses import dataclass
