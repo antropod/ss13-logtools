@@ -8,7 +8,7 @@ from logtools.parsers.runtime import RuntimeTxtParser
 from logtools.models.manifest import Manifest
 from logtools.parsers.uplink import UplinkTxtParser
 
-logging.basicConfig(level=logging.INFO, format='%(message)s')
+logging.basicConfig(level=logging.CRITICAL, format='%(message)s')
 LOG = logging.getLogger(__name__)
 
 

@@ -34,11 +34,6 @@ def parse_into_db(directory, archive_filename, session):
 
 
 def parse_directory_into_db(directory, session):
-    to_delete = [Uplink, Changeling, Manifest, GameSay, MapInfo]
-    for model in to_delete:
-        session.query(model).delete()
-    session.commit()
-
     for archive_filename in tqdm(os.listdir(directory)):
         LOG.info("Parsing %s", archive_filename)
         parse_into_db(directory, archive_filename, session)
@@ -46,6 +41,9 @@ def parse_directory_into_db(directory, session):
 
 def main():
     engine = create_engine("sqlite:///logs.sqlite")
+
+    to_delete = [t for t in Base.metadata.tables.values() if t.name != "round_archive_url"]
+    Base.metadata.drop_all(engine, tables=to_delete)
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
