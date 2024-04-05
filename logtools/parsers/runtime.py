@@ -2,7 +2,7 @@ import re
 import logging
 import datetime
 
-from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, RE_DT
+from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, RE_DT, ExternalInfo
 from logtools.parsers.functions import parse_dt_string
 from logtools.models.mapinfo import MapInfo
 from dataclasses import dataclass
@@ -15,7 +15,7 @@ class RuntimeTxtParser(BaseParser):
     
     log_filename = "runtime.txt"
     
-    def parse_stream(self, stream):
+    def parse_stream(self, stream, external_info: ExternalInfo):
         round_id = None
         map_name = None
         round_start = None

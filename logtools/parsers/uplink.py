@@ -3,7 +3,7 @@ import logging
 import sys
 
 from logtools.models.uplink import Uplink, Changeling, Spell, Malf, Heretic
-from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, Skip
+from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo, Skip
 from logtools.parsers.functions import parse_dt_string, nullable_int
 import datetime
 from logtools.parsers.functions import nullable_int
@@ -141,7 +141,7 @@ class UplinkTxtParser(BaseParser):
 
     log_filename = "uplink.txt"
 
-    def parse_stream(self, stream):
+    def parse_stream(self, stream, external_info: ExternalInfo):
         header = next(stream)
         m = re.match(r'\[([^\]]+)\] Starting up round ID (\d+).', header)
         _, round_id = m.groups()
