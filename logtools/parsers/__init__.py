@@ -4,6 +4,7 @@ from logtools.parsers.game import GameTxtParser
 from logtools.parsers.manifest import ManifestTxtParser
 from logtools.parsers.runtime import RuntimeTxtParser
 from logtools.parsers.uplink import UplinkTxtParser
+from logtools.parsers.silo import SiloParser
 
 __all__ = [
     "BaseParser",
@@ -12,4 +13,5 @@ __all__ = [
     "ManifestTxtParser",
     "RuntimeTxtParser",
     "UplinkTxtParser",
+    "SiloParser",
 ]
