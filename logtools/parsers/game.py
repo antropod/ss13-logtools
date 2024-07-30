@@ -76,7 +76,7 @@ class GameTxtParser(BaseParser):
                 if v:
                     ckey, mob_name, mob_id, reason, text, forced, location = v
 
-                    yield GameSay(
+                    yield GameSay, dict(
                         round_id=round_id,
                         dt=dt,
                         ckey=ckey,

@@ -2,7 +2,10 @@ import os
 import logging
 import io
 from tqdm import tqdm
+from itertools import groupby
+from operator import itemgetter
 
+from sqlalchemy.orm import Session
 from logtools.models import *
 from logtools.parsers import *
 
@@ -14,9 +17,11 @@ logging.basicConfig(level=logging.CRITICAL, format='[%(asctime)s] - %(levelname)
 LOG = logging.getLogger(__name__)
 
 
-def parse_one_filetype(parser, directory, archive_filename, session):
-    for record in parser.parse_file_from_archive(directory, archive_filename):
-        session.add(record)
+def parse_one_filetype(parser, directory, archive_filename, session: Session):
+    stream = parser.parse_file_from_archive(directory, archive_filename)
+    for model, records in groupby(stream, key=itemgetter(0)):
+        records = (record for _, record in records)
+        session.bulk_insert_mappings(model, records)
     session.commit()
 
 

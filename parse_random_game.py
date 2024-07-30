@@ -24,12 +24,11 @@ def get_sample_logs(directory):
 def main():
     materials = set()
     parser = SiloParser()
-    for filename in get_random_sample("logs", 1000):
-        filename = "round-221993.zip"
+    for filename in get_random_sample("logs", 100):
         records = parser.parse_file_from_archive("logs", filename)
         for r in records:
             pass
-            #print(r)
+
 
 if __name__ == "__main__":
     main()

@@ -65,7 +65,7 @@ class SiloParser(BaseParser):
             r = parse_silo(message)
             if r:
                 machine, loc, action, amount, item, materials = r
-                yield Silo(
+                yield Silo, dict(
                     round_id=round_id,
                     dt=dt,
                     machine=machine,

@@ -29,7 +29,7 @@ class CargoHtmlParser(BaseParser):
                 LOG.warning("Can't parse %s", line)
                 continue
             order, ordered_by, paid_by = m.groups()
-            yield CargoShippedOrder(
+            yield CargoShippedOrder, dict(
                 round_id=round_id,
                 dt=dt,
                 order=order,

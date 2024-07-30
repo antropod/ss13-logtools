@@ -29,7 +29,7 @@ class ManifestTxtParser(BaseParser):
                 continue
 
             dt, ckey, name, assigned_role, special_role, latejoin = m.groups()
-            yield Manifest(
+            yield Manifest, dict(
                 round_id=round_id,
                 dt=parse_dt_string(dt),
                 ckey=ckey,

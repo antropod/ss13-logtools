@@ -50,7 +50,7 @@ class RuntimeTxtParser(BaseParser):
                     map_name = m.groups()[0]
                     break
 
-        yield MapInfo(
+        yield MapInfo, dict(
             round_id=round_id,
             map_name=map_name,
             dt=round_start

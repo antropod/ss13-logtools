@@ -165,7 +165,7 @@ class UplinkTxtParser(BaseParser):
                     ckey, name, item, discount, price, uplink_name = r
                     uplink_type=_guess_uplink_type(uplink_name)
 
-                    yield Uplink(
+                    yield Uplink, dict(
                         round_id=round_id,
                         dt=dt,
                         ckey=ckey,
@@ -182,7 +182,7 @@ class UplinkTxtParser(BaseParser):
                 r = _parse_changeling(message)
                 if r:
                     ckey, name, power = r
-                    yield Changeling(
+                    yield Changeling, dict(
                         round_id=round_id,
                         dt=dt,
                         ckey=ckey,
@@ -198,7 +198,7 @@ class UplinkTxtParser(BaseParser):
                     if r is Skip:
                         continue
                     ckey, name, spell, price = r
-                    yield Spell(
+                    yield Spell, dict(
                         round_id=round_id,
                         dt=dt,
                         ckey=ckey,
@@ -214,7 +214,7 @@ class UplinkTxtParser(BaseParser):
                     continue
                 if r:
                     ckey, name, power = r
-                    yield Malf(
+                    yield Malf, dict(
                         round_id=round_id,
                         dt=dt,
                         ckey=ckey,
@@ -229,7 +229,7 @@ class UplinkTxtParser(BaseParser):
                     continue
                 if r:
                     ckey, name, knowledge = r
-                    yield Heretic(
+                    yield Heretic, dict(
                         round_id=round_id,
                         dt=dt,
                         ckey=ckey,
