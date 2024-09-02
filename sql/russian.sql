@@ -18,7 +18,7 @@ from (
           round_id,
           sum(ru) as ru_messages,
           count(*) as messages
-        from game_say as game
+        from game as game
         left join round_archive_url as url
         using (round_id)
         where ckey is not null
@@ -28,6 +28,6 @@ from (
           server, lower(ckey), round_id
     )
     group by server, ckey
-    having rounds > 100
+    having rounds > 30
 )
 group by server;

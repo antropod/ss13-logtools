@@ -1,6 +1,7 @@
 import os
 import logging
 import io
+import random
 from tqdm import tqdm
 from itertools import groupby
 from operator import itemgetter
@@ -38,8 +39,11 @@ def parse_into_db(directory, archive_filename, session):
         parse_one_filetype(parser, directory, archive_filename, session)
 
 
-def parse_directory_into_db(directory, session):
-    for archive_filename in tqdm(os.listdir(directory)):
+def parse_directory_into_db(directory, session, sample=None):
+    files = os.listdir(directory)
+    if sample:
+        files = random.sample(files, sample)
+    for archive_filename in tqdm(files):
         LOG.info("Parsing %s", archive_filename)
         parse_into_db(directory, archive_filename, session)
 
@@ -47,7 +51,10 @@ def parse_directory_into_db(directory, session):
 def main():
     engine = create_engine("sqlite:///logs.sqlite")
 
-    to_delete = [t for t in Base.metadata.tables.values() if t.name != "round_archive_url"]
+    to_delete = [
+        t for t in Base.metadata.tables.values() 
+        if t.name not in ["round_archive_url", "game_say"]
+    ]
     Base.metadata.drop_all(engine, tables=to_delete)
     Base.metadata.create_all(engine)
 

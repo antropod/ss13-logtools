@@ -2,7 +2,7 @@ import re
 import logging
 import datetime
 
-from logtools.models import GameSay
+from logtools.models import GameSay, Game
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo
 from logtools.parsers.functions import parse_dt_string
 from dataclasses import dataclass
@@ -10,16 +10,8 @@ from dataclasses import dataclass
 
 LOG = logging.getLogger(__name__)
 
-@dataclass
-class Game:
-    round_id: int
-    dt: datetime.datetime
-    category: str
-    subcategory: str
-    message: str
-
-
-RE_GAME_SAY = re.compile(r"(.+?)/\((.+?)\) \((.+?)\) (?:\((.+?)\) )?\"(.+?)\" (?:FORCED by (.+?) )?\((.+?)\)$")
+RE_GAME_SAY = re.compile(r"(.+?)/\((.+?)\) (?:\((.+?)\) )?(?:\((.+?)\) )?\"(.+?)\" (?:FORCED by (.+?) )?\((.+?)\)$")
+RE_GAME_OOC = re.compile(r"(.+?)/\((.+?)\) \"(.+?)\" \((.+?)\)$")
 RE_RUSSIAN_LETTERS = re.compile(r"[а-я]", re.UNICODE | re.IGNORECASE)
 
 def _parse_game_say(message):
@@ -35,6 +27,9 @@ def _parse_game_say(message):
 
     >>> _parse_game_say('ToastGoats/(D.A.N.I.E.L) (mob_3381) (HOLOPAD in Captains Office (84,132,3)) "Yes hello" (AI Chamber (190,36,3))')
     ('ToastGoats', 'D.A.N.I.E.L', 'mob_3381', 'HOLOPAD in Captains Office (84,132,3)', 'Yes hello', None, 'AI Chamber (190,36,3)')
+
+    >>> _parse_game_say('Carloszx/(Lisa Red) "captain of the damned" (Emergency Shuttle (144,155,13))')
+    ('Carloszx', 'Lisa Red', None, None, 'captain of the damned', None, 'Emergency Shuttle (144,155,13)')
     """
     m = re.match(RE_GAME_SAY, message)
     if m:
@@ -42,6 +37,19 @@ def _parse_game_say(message):
         if ckey == "*no key*":
             ckey = None
         return ckey, mob_name, mob_id, reason, text, forced, location
+    return None
+
+
+def _parse_game_ooc(message):
+    """
+    >>> _parse_game_ooc('FakeCkey/(Fake mob name) "i was the miiner" (start area (8,248,1))')
+    ('FakeCkey', 'Fake mob name', 'i was the miiner', 'start area (8,248,1)')
+    """
+    if m := re.match(RE_GAME_OOC, message):
+        ckey, mob_name, text, location = m.groups()
+        if ckey == "*no key*":
+            ckey = None
+        return ckey, mob_name, text, location
     return None
 
 
@@ -84,13 +92,14 @@ class GameTxtParser(BaseParser):
                         round_id = int(round_id_str)
                     continue
 
-            if category == "GAME-SAY":
+            if category == "GAME-SAY" or category == "SAY":
                 v = _parse_game_say(message)
                 if v:
                     ckey, mob_name, mob_id, reason, text, forced, location = v
 
-                    yield GameSay, dict(
+                    yield Game, dict(
                         round_id=round_id,
+                        category="GAME-SAY",
                         dt=dt,
                         ckey=ckey,
                         mob_name=mob_name,
@@ -103,4 +112,25 @@ class GameTxtParser(BaseParser):
                     )
                 else:
                     LOG.error("Failed to parse GAME-SAY: %s", message)
+                continue
+            elif category == "GAME-OOC" or category == "OOC":
+                v = _parse_game_ooc(message)
+                if v:
+                    ckey, mob_name, text, location = v
+
+                    yield Game, dict(
+                        round_id=round_id,
+                        category="GAME-OOC",
+                        dt=dt,
+                        ckey=ckey,
+                        mob_name=mob_name,
+                        mob_id=None,
+                        reason=None,
+                        text=text,
+                        forced=None,
+                        location=location,
+                        ru=_contains_russian(text),
+                    )
+                else:
+                    LOG.error("Failed to parse GAME-OOC: %s", message)
                 continue

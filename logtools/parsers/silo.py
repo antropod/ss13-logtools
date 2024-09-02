@@ -48,9 +48,8 @@ class SiloParser(BaseParser):
 
     def parse_stream(self, stream, external_info: ExternalInfo):
         header = next(stream)
-        m = re.match(r'\[([^\]]+)\] Starting up round ID (\d+).', header)
-        _, round_id = m.groups()
-        round_id = int(round_id)
+        m = re.search(r'Starting up round ID (\d+).', header)
+        round_id = int(m.group(1))
 
         for line in stream:
             line = line.rstrip('\n')

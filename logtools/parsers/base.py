@@ -24,7 +24,7 @@ class BaseParser:
 
     def parse_file_from_archive(self, directory, archive_filename):
         try:
-            with ZipFile(os.path.join(directory, archive_filename), "r") as zf:        
+            with ZipFile(os.path.join(directory, archive_filename), "r") as zf:
                 with zf.open(self.log_filename) as fp:
                     stream = io.TextIOWrapper(fp, 'utf8')
                     m = re.match(r"round-(\d+)\.zip", archive_filename)
@@ -33,9 +33,12 @@ class BaseParser:
                     for record in self.parse_stream(stream, external_info):
                         yield record
         except KeyError as exc:
-            LOG.error("Failed to open %s:%s - %s", archive_filename, self.log_filename, str(exc))
+            LOG.warn("Failed to open %s:%s - %s", archive_filename, self.log_filename, str(exc))
         except BadZipFile as exc:
             LOG.error("Failed to open %s - %s", archive_filename, str(exc))
+        except Exception as exc:
+            LOG.error("Failed to parse %s:%s - %s", archive_filename, self.log_filename, str(exc))
+            raise
 
 
 class _Skip:

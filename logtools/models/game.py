@@ -37,3 +37,21 @@ class GameSay(Base):
                 f"forced={self.forced!r}, "\
                 f"location={self.location!r}, "\
                 f"ru={self.ru})>"
+    
+
+class Game(Base):
+    
+    __tablename__ = "game"
+
+    id = Column(Integer, primary_key=True)
+    round_id = Column(Integer)
+    category = Column(String, nullable=False)
+    dt = Column(DateTime)
+    ckey = Column(String)
+    mob_name = Column(String)
+    mob_id = Column(String)
+    reason = Column(String)
+    text = Column(String)
+    forced = Column(String)
+    location = Column(String)
+    ru = Column(Boolean)
