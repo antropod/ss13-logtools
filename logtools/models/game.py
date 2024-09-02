@@ -3,6 +3,7 @@ from sqlalchemy import (
     Integer,
     String,
     DateTime,
+    Boolean,
 )
 
 from .meta import Base
@@ -22,6 +23,7 @@ class GameSay(Base):
     text = Column(String)
     forced = Column(String)
     location = Column(String)
+    ru = Column(Boolean)
 
     def __repr__(self) -> str:
         return f"<GameSay("\
@@ -33,4 +35,5 @@ class GameSay(Base):
                 f"reason={self.reason!r}, "\
                 f"text={self.text!r}, "\
                 f"forced={self.forced!r}, "\
-                f"location={self.location!r})>"
+                f"location={self.location!r}, "\
+                f"ru={self.ru})>"

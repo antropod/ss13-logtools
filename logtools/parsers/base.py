@@ -26,7 +26,7 @@ class BaseParser:
         try:
             with ZipFile(os.path.join(directory, archive_filename), "r") as zf:        
                 with zf.open(self.log_filename) as fp:
-                    stream = io.TextIOWrapper(fp, 'latin-1')
+                    stream = io.TextIOWrapper(fp, 'utf8')
                     m = re.match(r"round-(\d+)\.zip", archive_filename)
                     round_id = int(m.group(1))
                     external_info = ExternalInfo(round_id=round_id)

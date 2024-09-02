@@ -20,6 +20,7 @@ class Game:
 
 
 RE_GAME_SAY = re.compile(r"(.+?)/\((.+?)\) \((.+?)\) (?:\((.+?)\) )?\"(.+?)\" (?:FORCED by (.+?) )?\((.+?)\)$")
+RE_RUSSIAN_LETTERS = re.compile(r"[а-я]", re.UNICODE | re.IGNORECASE)
 
 def _parse_game_say(message):
     """
@@ -42,6 +43,18 @@ def _parse_game_say(message):
             ckey = None
         return ckey, mob_name, mob_id, reason, text, forced, location
     return None
+
+
+def _contains_russian(text):
+    """
+    >>> _contains_russian("Asdfы")
+    True
+    >>> _contains_russian("Ж")
+    True
+    >>> _contains_russian("Hello")
+    False
+    """
+    return bool(re.search(RE_RUSSIAN_LETTERS, text))
 
 
 class GameTxtParser(BaseParser):
@@ -86,6 +99,7 @@ class GameTxtParser(BaseParser):
                         text=text,
                         forced=forced,
                         location=location,
+                        ru=_contains_russian(text),
                     )
                 else:
                     LOG.error("Failed to parse GAME-SAY: %s", message)

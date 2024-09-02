@@ -49,6 +49,7 @@ def make_reports():
         "heretic_knowledge",
     )
     make_report("cargo_orders", "cargo_orders")
+    make_report("unique_players", "unique_players")
 
 
 def main():

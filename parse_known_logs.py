@@ -26,7 +26,14 @@ def parse_one_filetype(parser, directory, archive_filename, session: Session):
 
 
 def parse_into_db(directory, archive_filename, session):
-    parsers = [UplinkTxtParser(), ManifestTxtParser(), RuntimeTxtParser(), CargoHtmlParser(), SiloParser()]
+    parsers = [
+        UplinkTxtParser(),
+        ManifestTxtParser(),
+        RuntimeTxtParser(),
+        CargoHtmlParser(),
+        SiloParser(),
+        GameTxtParser(),
+    ]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)
 
