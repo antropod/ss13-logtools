@@ -33,7 +33,7 @@ def parse_into_db(directory, archive_filename, session):
         RuntimeTxtParser(),
         CargoHtmlParser(),
         SiloParser(),
-        GameTxtParser(),
+        # GameTxtParser(),
     ]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)
@@ -53,7 +53,7 @@ def main():
 
     to_delete = [
         t for t in Base.metadata.tables.values() 
-        if t.name not in ["round_archive_url", "game_say"]
+        if t.name not in ["round_archive_url"]
     ]
     Base.metadata.drop_all(engine, tables=to_delete)
     Base.metadata.create_all(engine)

@@ -1,7 +1,8 @@
 select
   *
-from game_say
-where lower(ckey) = ""
+from game
+where category = 'GAME-SAY'
+  and lower(ckey) = ""
   and ckey is not null
   and reason is null
   and forced is null

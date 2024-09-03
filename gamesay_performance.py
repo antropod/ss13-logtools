@@ -15,7 +15,7 @@ LOG = logging.getLogger(__name__)
 
 
 def parse_directory_into_db(directory, session):
-    to_delete = [Uplink, Changeling, Manifest, GameSay, MapInfo]
+    to_delete = [Uplink, Changeling, Manifest, Game, MapInfo]
     for model in to_delete:
         session.query(model).delete()
     session.commit()

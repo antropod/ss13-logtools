@@ -36,9 +36,9 @@ def make_reports():
     if not os.path.exists(REPORTS_DIR):
         os.mkdir(REPORTS_DIR)
 
-    make_report("russian", "russian")
     make_report("antag_rates", "antag_rates")
     #make_report("saylog", "saylog")
+    #make_report("russian", "russian")
     make_report("map_pivot", "map_pivot")
     make_report(
         "uplink",

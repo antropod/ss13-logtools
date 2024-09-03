@@ -13,9 +13,10 @@ from (
       server,
       count(*) as lines,
       sum(length(text)) as characters
-    from game_say as game
+    from game as game
     left join round_archive_url as url on (game.round_id = url.round_id)
-    where ckey is not null
+    where category = 'GAME-SAY'
+      and ckey is not null
       and reason is null
       and forced is null
     group by game.round_id, lower(ckey)
