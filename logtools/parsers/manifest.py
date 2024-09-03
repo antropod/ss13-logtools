@@ -14,6 +14,7 @@ class ManifestTxtParser(BaseParser):
     log_filename = "manifest.txt"
 
     def parse_stream(self, stream, external_info: ExternalInfo, metrics: MetricsStruct):
+        # TODO(antropod): Fallback parser for borked manifest like in round 207288
         header = next(stream)
         m = re.search(r'Starting up round ID (\d+).', header)
         round_id = int(m.group(1))
@@ -22,12 +23,16 @@ class ManifestTxtParser(BaseParser):
             line = line.rstrip('\n')
             if line.startswith(' -'):
                 continue
-            m = re.match(r"\[([^\]]+)\] MANIFEST: (.+?) \\ (.+?) \\ (.+?) \\ (.+?) \\ (.+?)$", line)
+            metrics.total += 1
+            m = re.match(r"\[([^\]]+)\] (?:MANIFEST: )?(.+?) \\ (.+?) \\ (.+?) \\ (.+?) \\ (.+?)$", line)
             if not m:
+                metrics.failed += 1
                 LOG.warning("Can't parse %s", line)
                 continue
 
             dt, ckey, name, assigned_role, special_role, latejoin = m.groups()
+
+            metrics.parsed += 1
             yield Manifest, dict(
                 round_id=round_id,
                 dt=parse_dt_string(dt),

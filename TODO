@@ -1,10 +1,1 @@
-Tests for GAME-SAY parser
-config
-unified stats tool
-better parser that does not rely on regular expressions
-
-Partial updates when fetching urls
-Unified CLI tool
-
-When parsing round, replace records in the database
-Tests for parsers
+Detect empty files for metrics

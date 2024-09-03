@@ -25,6 +25,8 @@ class RuntimeTxtParser(BaseParser):
             if line.startswith(' -') or line.startswith('-'):
                 continue
 
+            metrics.total += 1
+
             if round_id is None:
                 m = re.match(RE_DT + r" Starting up round ID (\d+)\.$", line)
                 if m:
@@ -36,12 +38,14 @@ class RuntimeTxtParser(BaseParser):
 
             m = re.match(RE_GAME_MESSAGE, line)
             if not m:
+                metrics.failed += 1
                 LOG.warning("Can't parse %s", line)
                 continue
             year, month, day, hour, minute, second, microsecond, category, message = m.groups()
             dt = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), int(microsecond))
 
             if category != "RUNTIME":
+                metrics.skipped += 1
                 continue
             
             if map_name is None:
@@ -49,7 +53,8 @@ class RuntimeTxtParser(BaseParser):
                 if m:
                     map_name = m.groups()[0]
                     break
-
+        # For this file metrics actually do not mean anything useful
+        metrics.parsed += 1
         yield MapInfo, dict(
             round_id=round_id,
             map_name=map_name,

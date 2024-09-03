@@ -55,8 +55,10 @@ class SiloParser(BaseParser):
             line = line.rstrip('\n')
             if line.startswith(' -'):
                 continue
+            metrics.total += 1
             m = re.match(RE_GAME_MESSAGE, line)
             if not m:
+                metrics.failed += 1
                 LOG.warning("Can't parse %s", line)
                 continue
             year, month, day, hour, minute, second, microsecond, category, message = m.groups()
@@ -64,6 +66,8 @@ class SiloParser(BaseParser):
             r = parse_silo(message)
             if r:
                 machine, loc, action, amount, item, materials = r
+
+                metrics.parsed += 1
                 yield Silo, dict(
                     round_id=round_id,
                     dt=dt,
@@ -75,4 +79,5 @@ class SiloParser(BaseParser):
                     **materials,
                 )
             else:
+                metrics.failed += 1
                 LOG.warning("Can't parse %s", line)
