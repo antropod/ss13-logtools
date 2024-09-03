@@ -3,7 +3,7 @@ import logging
 import datetime
 import sys
 
-from logtools.models import Silo
+from logtools.models import Silo, MetricsStruct
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo
 
 
@@ -46,7 +46,7 @@ class SiloParser(BaseParser):
 
     log_filename = "silo.txt"
 
-    def parse_stream(self, stream, external_info: ExternalInfo):
+    def parse_stream(self, stream, external_info: ExternalInfo, metrics: MetricsStruct):
         header = next(stream)
         m = re.search(r'Starting up round ID (\d+).', header)
         round_id = int(m.group(1))

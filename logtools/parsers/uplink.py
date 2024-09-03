@@ -3,7 +3,7 @@ import logging
 import sys
 
 from dataclasses import asdict
-from logtools.models import Uplink, Changeling, Spell, Malf, Heretic, Metrics, MetricsStruct
+from logtools.models import Uplink, Changeling, Spell, Malf, Heretic, MetricsStruct
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo, Skip
 from logtools.parsers.functions import parse_dt_string, nullable_int
 import datetime
@@ -142,11 +142,7 @@ class UplinkTxtParser(BaseParser):
 
     log_filename = "uplink.txt"
 
-    def parse_stream(self, stream, external_info: ExternalInfo):
-        metrics = MetricsStruct(
-            archive=external_info.archive,
-            logfile=external_info.logfile,
-        )
+    def parse_stream(self, stream, external_info: ExternalInfo, metrics: MetricsStruct):
         header = next(stream)
         m = re.search(r'Starting up round ID (\d+).', header)
         round_id = int(m.group(1))
@@ -283,5 +279,3 @@ class UplinkTxtParser(BaseParser):
                 metrics.failed += 1
                 LOG.warning("Unknown category %s for %s", category, line)
                 continue
-
-        yield Metrics, asdict(metrics)

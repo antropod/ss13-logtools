@@ -1,7 +1,7 @@
 import re
 import logging
 
-from logtools.models import Manifest
+from logtools.models import Manifest, MetricsStruct
 from logtools.parsers.base import BaseParser, ExternalInfo
 from logtools.parsers.functions import parse_dt_string
 
@@ -13,7 +13,7 @@ class ManifestTxtParser(BaseParser):
 
     log_filename = "manifest.txt"
 
-    def parse_stream(self, stream, external_info: ExternalInfo):
+    def parse_stream(self, stream, external_info: ExternalInfo, metrics: MetricsStruct):
         header = next(stream)
         m = re.search(r'Starting up round ID (\d+).', header)
         round_id = int(m.group(1))

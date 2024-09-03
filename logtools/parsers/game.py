@@ -2,7 +2,7 @@ import re
 import logging
 import datetime
 
-from logtools.models import Game
+from logtools.models import Game, MetricsStruct
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo
 from logtools.parsers.functions import parse_dt_string
 from dataclasses import dataclass
@@ -69,7 +69,7 @@ class GameTxtParser(BaseParser):
 
     log_filename = "game.txt"
 
-    def parse_stream(self, stream, external_info: ExternalInfo):
+    def parse_stream(self, stream, external_info: ExternalInfo, metrics: MetricsStruct):
         round_id = None
 
         for line in stream:

@@ -1,3 +1,4 @@
 select *
 from metrics
-where failed;
+where logfile <> 'cargo.html'
+ and (total = 0 or failed);

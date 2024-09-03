@@ -23,8 +23,8 @@ def get_sample_logs(directory):
 
 
 def main():
-    parser = UplinkTxtParser()
-    for filename in ["round-208202.zip"]:
+    parser = CargoHtmlParser()
+    for filename in ["round-206917.zip"]:
     # for filename in get_random_sample("logs", 100):
         records = parser.parse_file_from_archive("logs", filename)
         for r in records:
