@@ -8,11 +8,13 @@ from zipfile import BadZipFile, ZipFile
 LOG = logging.getLogger(__name__)
 
 RE_DT = r"\[([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{3})\]"
-RE_GAME_MESSAGE = re.compile(RE_DT + r" ([A-Za-z-]+): (.*)$")
+RE_GAME_MESSAGE = re.compile(RE_DT + r" (?:([A-Za-z- ]+): )?(.*)$")
 
 @dataclass
 class ExternalInfo:
     round_id: int
+    archive: str
+    logfile: str
 
 
 class BaseParser:
@@ -29,7 +31,11 @@ class BaseParser:
                     stream = io.TextIOWrapper(fp, 'utf8')
                     m = re.match(r"round-(\d+)\.zip", archive_filename)
                     round_id = int(m.group(1))
-                    external_info = ExternalInfo(round_id=round_id)
+                    external_info = ExternalInfo(
+                        round_id=round_id,
+                        archive=archive_filename,
+                        logfile=self.log_filename,
+                    )
                     for record in self.parse_stream(stream, external_info):
                         yield record
         except KeyError as exc:

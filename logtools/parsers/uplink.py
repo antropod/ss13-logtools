@@ -2,7 +2,8 @@ import re
 import logging
 import sys
 
-from logtools.models import Uplink, Changeling, Spell, Malf, Heretic
+from dataclasses import asdict
+from logtools.models import Uplink, Changeling, Spell, Malf, Heretic, Metrics, MetricsStruct
 from logtools.parsers.base import BaseParser, RE_GAME_MESSAGE, ExternalInfo, Skip
 from logtools.parsers.functions import parse_dt_string, nullable_int
 import datetime
@@ -142,6 +143,10 @@ class UplinkTxtParser(BaseParser):
     log_filename = "uplink.txt"
 
     def parse_stream(self, stream, external_info: ExternalInfo):
+        metrics = MetricsStruct(
+            archive=external_info.archive,
+            logfile=external_info.logfile,
+        )
         header = next(stream)
         m = re.search(r'Starting up round ID (\d+).', header)
         round_id = int(m.group(1))
@@ -150,20 +155,38 @@ class UplinkTxtParser(BaseParser):
             line = line.rstrip('\n')
             if line.startswith(' -'):
                 continue
+            metrics.total += 1
             m = re.match(RE_GAME_MESSAGE, line)
             if not m:
+                metrics.failed += 1
                 LOG.warning("Can't parse %s", line)
                 continue
             year, month, day, hour, minute, second, microsecond, category, message = m.groups()
             dt = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), int(microsecond))
+
+            # Fallback for logs without category
+            if category is None:
+                if _parse_uplink(message):
+                    category = "UPLINK"
+                elif _parse_changeling(message):
+                    category = "CHANGELING"
+                elif _parse_spell(message):
+                    category = "SPELLBOOK"
+                elif _parse_malf(message):
+                    category = "MALF UPGRADE"
+                elif _parse_heretic(message):
+                    category = "HERETIC RESEARCH"
+
             if category == "UPLINK":
                 r = _parse_uplink(message)
                 if r is Skip:
+                    metrics.skipped += 1
                     continue
                 if r:
                     ckey, name, item, discount, price, uplink_name = r
                     uplink_type=_guess_uplink_type(uplink_name)
 
+                    metrics.parsed += 1
                     yield Uplink, dict(
                         round_id=round_id,
                         dt=dt,
@@ -175,12 +198,15 @@ class UplinkTxtParser(BaseParser):
                         uplink_type=uplink_type,
                     )
                 else:
+                    metrics.failed += 1
                     LOG.warning("Can't parse %s", line)
 
-            elif category == "UPLINK-CHANGELING":
+            elif category == "UPLINK-CHANGELING" or category == "CHANGELING":
                 r = _parse_changeling(message)
                 if r:
                     ckey, name, power = r
+
+                    metrics.parsed += 1
                     yield Changeling, dict(
                         round_id=round_id,
                         dt=dt,
@@ -189,14 +215,18 @@ class UplinkTxtParser(BaseParser):
                         power=power,
                     )
                 else:
+                    metrics.failed += 1
                     LOG.warning("Can't parse %s", line)
 
-            elif category == "UPLINK-SPELL":
+            elif category == "UPLINK-SPELL" or category == "SPELLBOOK":
                 r = _parse_spell(message)
                 if r:
                     if r is Skip:
+                        metrics.skipped += 1
                         continue
                     ckey, name, spell, price = r
+
+                    metrics.parsed += 1
                     yield Spell, dict(
                         round_id=round_id,
                         dt=dt,
@@ -206,13 +236,17 @@ class UplinkTxtParser(BaseParser):
                         price=price,
                     )
                 else:
+                    metrics.failed += 1
                     LOG.warning("Can't parse %s", line)
-            elif category == "UPLINK-MALF":
+            elif category == "UPLINK-MALF" or category == "MALF UPGRADE":
                 r = _parse_malf(message)
                 if r is Skip:
+                    metrics.skipped += 1
                     continue
                 if r:
                     ckey, name, power = r
+
+                    metrics.parsed += 1
                     yield Malf, dict(
                         round_id=round_id,
                         dt=dt,
@@ -221,13 +255,17 @@ class UplinkTxtParser(BaseParser):
                         power=power,
                     )
                 else:
+                    metrics.failed += 1
                     LOG.warning("Can't parse %s", line)
-            elif category == "UPLINK-HERETIC":
+            elif category == "UPLINK-HERETIC" or category == "HERETIC RESEARCH":
                 r = _parse_heretic(message)
                 if r is Skip:
+                    metrics.skipped += 1
                     continue
                 if r:
                     ckey, name, knowledge = r
+
+                    metrics.parsed += 1
                     yield Heretic, dict(
                         round_id=round_id,
                         dt=dt,
@@ -236,9 +274,14 @@ class UplinkTxtParser(BaseParser):
                         knowledge=knowledge,
                     )
                 else:
+                    metrics.failed += 1
                     LOG.warning("Can't parse %s", line)
             elif category == "UPLINK-SPY":
+                metrics.skipped += 1
                 pass
             else:
-                LOG.warning("Can't parse %s", line)
+                metrics.failed += 1
+                LOG.warning("Unknown category %s for %s", category, line)
                 continue
+
+        yield Metrics, asdict(metrics)

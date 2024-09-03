@@ -61,7 +61,7 @@ def main():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    parse_directory_into_db("logs", session)
+    parse_directory_into_db("logs", session, sample=1000)
 
 
 if __name__ == "__main__":

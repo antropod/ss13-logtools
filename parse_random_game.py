@@ -8,7 +8,7 @@ from logtools.models import *
 from logtools.parsers import *
 
 
-logging.basicConfig(level=logging.ERROR, format='%(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(message)s')
 LOG = logging.getLogger(__name__)
 
 
@@ -23,8 +23,9 @@ def get_sample_logs(directory):
 
 
 def main():
-    parser = GameTxtParser()
-    for filename in get_random_sample("logs", 100):
+    parser = UplinkTxtParser()
+    for filename in ["round-208202.zip"]:
+    # for filename in get_random_sample("logs", 100):
         records = parser.parse_file_from_archive("logs", filename)
         for r in records:
             pass
