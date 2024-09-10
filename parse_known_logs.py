@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-logging.basicConfig(level=logging.ERROR, format='[%(asctime)s] - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.CRITICAL, format='[%(asctime)s] - %(levelname)s - %(message)s')
 LOG = logging.getLogger(__name__)
 
 
@@ -28,13 +28,13 @@ def parse_one_filetype(parser, directory, archive_filename, session: Session):
 
 def parse_into_db(directory, archive_filename, session):
     parsers = [
-        UplinkTxtParser(),
-        ManifestTxtParser(),
-        RuntimeTxtParser(),
-        CargoHtmlParser(),
-        SiloParser(),
+        # UplinkTxtParser(),
+        # ManifestTxtParser(),
+        # RuntimeTxtParser(),
+        # CargoHtmlParser(),
+        # SiloParser(),
         GameTxtParser(),
-        DynamicCombinedParser(),
+        # DynamicCombinedParser(),
     ]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)
@@ -50,6 +50,7 @@ def parse_directory_into_db(directory, session, sample=None):
 
 
 def main():
+    random.seed(69)
     engine = create_engine("sqlite:///logs.sqlite")
 
     to_delete = [
@@ -62,7 +63,7 @@ def main():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    parse_directory_into_db("logs", session)
+    parse_directory_into_db("logs", session, sample=1000)
 
 
 if __name__ == "__main__":

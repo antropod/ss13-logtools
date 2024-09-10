@@ -24,4 +24,7 @@ class Game(Base):
     text = Column(String)
     forced = Column(String)
     location = Column(String)
+    x = Column(Integer)
+    y = Column(Integer)
+    z = Column(Integer)
     ru = Column(Boolean)

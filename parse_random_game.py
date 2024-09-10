@@ -23,12 +23,12 @@ def get_sample_logs(directory):
 
 
 def main():
-    parser = DynamicCombinedParser()
-    for filename in ["round-201468.zip"]:
+    parser = GameTxtParser()
+    for filename in ["round-209595.zip"]:
     # for filename in get_random_sample("logs", 100):
         records = parser.parse_archive("logs", filename)
         for r in records:
-            print(r)
+            pass
 
 
 if __name__ == "__main__":
