@@ -23,7 +23,7 @@ class BaseParser:
     def parse_stream(self, stream, external_info: ExternalInfo, metrics: MetricsStruct):
         raise NotImplementedError()
 
-    def parse_file_from_archive(self, directory, archive_filename):
+    def parse_archive(self, directory, archive_filename):
         try:
             with ZipFile(os.path.join(directory, archive_filename), "r") as zf:
                 with zf.open(self.log_filename) as fp:

@@ -14,12 +14,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-logging.basicConfig(level=logging.CRITICAL, format='[%(asctime)s] - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.ERROR, format='[%(asctime)s] - %(levelname)s - %(message)s')
 LOG = logging.getLogger(__name__)
 
 
 def parse_one_filetype(parser, directory, archive_filename, session: Session):
-    stream = parser.parse_file_from_archive(directory, archive_filename)
+    stream = parser.parse_archive(directory, archive_filename)
     for model, records in groupby(stream, key=itemgetter(0)):
         records = (record for _, record in records)
         session.bulk_insert_mappings(model, records)
@@ -33,7 +33,8 @@ def parse_into_db(directory, archive_filename, session):
         RuntimeTxtParser(),
         CargoHtmlParser(),
         SiloParser(),
-        # GameTxtParser(),
+        GameTxtParser(),
+        DynamicCombinedParser(),
     ]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)
@@ -61,7 +62,7 @@ def main():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    parse_directory_into_db("logs", session, sample=1000)
+    parse_directory_into_db("logs", session)
 
 
 if __name__ == "__main__":

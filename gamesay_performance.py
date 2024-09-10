@@ -22,7 +22,7 @@ def parse_directory_into_db(directory, session):
 
     parser = GameTxtParser()
     for archive_filename in tqdm(os.listdir(directory)):
-        for record in parser.parse_file_from_archive(directory, archive_filename):
+        for record in parser.parse_archive(directory, archive_filename):
             session.add(record)
     session.commit()
 

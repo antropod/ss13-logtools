@@ -13,7 +13,7 @@ def get_random_log(directory):
 def main():
     filename = get_random_log("logs")
     parser = ManifestTxtParser()
-    records = parser.parse_file_from_archive("logs", filename)
+    records = parser.parse_archive("logs", filename)
     for r in records:
         print(r)
 

@@ -76,9 +76,11 @@ class GameTxtParser(BaseParser):
             line = line.rstrip('\n')
             if line.startswith(' -') or line.startswith('-'):
                 continue
-
+            
+            metrics.total += 1
             m = re.match(RE_GAME_MESSAGE, line)
             if not m:
+                metrics.failed += 1
                 LOG.warning("Can't parse %s", line)
                 continue
             year, month, day, hour, minute, second, microsecond, category, message = m.groups()
@@ -97,6 +99,7 @@ class GameTxtParser(BaseParser):
                 if v:
                     ckey, mob_name, mob_id, reason, text, forced, location = v
 
+                    metrics.parsed += 1
                     yield Game, dict(
                         round_id=round_id,
                         category="GAME-SAY",
@@ -111,6 +114,7 @@ class GameTxtParser(BaseParser):
                         ru=_contains_russian(text),
                     )
                 else:
+                    metrics.failed += 1
                     LOG.error("Failed to parse GAME-SAY: %s", message)
                 continue
             elif category == "GAME-OOC" or category == "OOC":
@@ -118,6 +122,7 @@ class GameTxtParser(BaseParser):
                 if v:
                     ckey, mob_name, text, location = v
 
+                    metrics.parsed += 1
                     yield Game, dict(
                         round_id=round_id,
                         category="GAME-OOC",
@@ -132,5 +137,9 @@ class GameTxtParser(BaseParser):
                         ru=_contains_russian(text),
                     )
                 else:
+                    metrics.failed += 1
                     LOG.error("Failed to parse GAME-OOC: %s", message)
+                continue
+            else:
+                metrics.skipped += 1
                 continue

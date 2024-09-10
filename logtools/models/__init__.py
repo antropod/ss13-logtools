@@ -1,4 +1,5 @@
 from logtools.models.cargo import CargoShippedOrder
+from logtools.models.dynamic import Dynamic, DynamicStruct
 from logtools.models.game import Game
 from logtools.models.manifest import Manifest
 from logtools.models.mapinfo import MapInfo
@@ -10,6 +11,8 @@ from logtools.models.silo import Silo
 
 __all__ = [
     "CargoShippedOrder",
+    "Dynamic",
+    "DynamicStruct",
     "Game",
     "Manifest",
     "MapInfo",
