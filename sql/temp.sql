@@ -1,11 +1,3 @@
-select
-  location,
-  count(*) as cnt
+select *
 from game
-group by location
-order by cnt desc;
-
-select 
-  *
-from game
-where location = 'a'
+limit 100;

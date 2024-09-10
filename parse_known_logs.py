@@ -28,13 +28,13 @@ def parse_one_filetype(parser, directory, archive_filename, session: Session):
 
 def parse_into_db(directory, archive_filename, session):
     parsers = [
-        # UplinkTxtParser(),
-        # ManifestTxtParser(),
-        # RuntimeTxtParser(),
-        # CargoHtmlParser(),
-        # SiloParser(),
+        UplinkTxtParser(),
+        ManifestTxtParser(),
+        RuntimeTxtParser(),
+        CargoHtmlParser(),
+        SiloParser(),
         GameTxtParser(),
-        # DynamicCombinedParser(),
+        DynamicCombinedParser(),
     ]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)
@@ -50,7 +50,6 @@ def parse_directory_into_db(directory, session, sample=None):
 
 
 def main():
-    random.seed(69)
     engine = create_engine("sqlite:///logs.sqlite")
 
     to_delete = [
@@ -63,7 +62,7 @@ def main():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    parse_directory_into_db("logs", session, sample=1000)
+    parse_directory_into_db("logs", session)
 
 
 if __name__ == "__main__":
