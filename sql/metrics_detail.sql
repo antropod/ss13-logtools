@@ -1,3 +1,4 @@
 select *
 from metrics
-where logfile = 'dynamic-combined.meta' and failed;
+where logfile = 'game.txt' and failed
+order by archive, id;
