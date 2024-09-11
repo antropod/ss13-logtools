@@ -44,7 +44,7 @@ class RuntimeTxtParser(BaseParser):
             year, month, day, hour, minute, second, microsecond, category, message = m.groups()
             dt = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), int(microsecond))
 
-            if category != "RUNTIME":
+            if category != "RUNTIME" and category is not None:
                 metrics.skipped += 1
                 continue
             

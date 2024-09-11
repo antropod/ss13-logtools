@@ -1,1 +1,3 @@
 Detect empty files for metrics
+Delete only tables that might get affected?
+Proper tests for parsers (not just lines, but whole archives or log files)
