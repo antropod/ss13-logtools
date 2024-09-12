@@ -1,11 +1,13 @@
 import os
 import random
-from common import Session
+from common import Session, engine, SQL_DIR
 import logging
 import datetime
 
+from logtools.util import read_file
 from logtools.models import *
 from logtools.parsers import *
+from sqlalchemy import text
 
 
 logging.basicConfig(level=logging.WARNING, format='%(message)s')
@@ -20,6 +22,14 @@ def get_random_sample(directory, sample=1):
 def get_sample_logs(directory):
     files = os.listdir(directory)[:100]
     return files
+
+
+def get_rounds_from_sql(sql_filename):
+    query = read_file(os.path.join(SQL_DIR, sql_filename))
+    with engine.connect() as conn:
+        result = conn.execute(text(query))
+        for r in result:
+            yield r[0]
 
 
 def main():

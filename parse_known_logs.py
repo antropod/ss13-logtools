@@ -35,6 +35,7 @@ def parse_into_db(directory, archive_filename, session):
         SiloParser(),
         GameTxtParser(),
         DynamicCombinedParser(),
+        RoundEndDataHtmlParser(),
     ]
     for parser in parsers:
         parse_one_filetype(parser, directory, archive_filename, session)

@@ -4,3 +4,4 @@ pandas
 openpyxl
 sqlalchemy
 tqdm
+beautifulsoup4

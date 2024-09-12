@@ -2,15 +2,11 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine
 
-from common import create_default_engine
+from common import create_default_engine, SQL_DIR, REPORTS_DIR
 from logtools.util import read_file
 from openpyxl import Workbook
 
 engine = create_default_engine()
-
-
-SQL_DIR = "sql"
-REPORTS_DIR = "reports"
 
 
 def make_report(name, report_name, *report_names):
@@ -36,23 +32,24 @@ def make_reports():
     if not os.path.exists(REPORTS_DIR):
         os.mkdir(REPORTS_DIR)
 
-    make_report("antag_rates", "antag_rates")
-    make_report("saylog", "saylog")
-    make_report("russian", "russian")
-    make_report("map_pivot", "map_pivot")
-    make_report(
-        "uplink",
-        "uplink_items",
-        "uplink_nukeops",
-        "changeling_powers",
-        "wizard_spell",
-        "malf_powers",
-        "heretic_knowledge",
-    )
-    make_report("cargo_orders", "cargo_orders")
-    make_report("unique_players", "unique_players")
-    make_report("dynamic", "dynamic")
-    make_report("dynamic_100", "dynamic_100")
+    # make_report("antag_rates", "antag_rates")
+    # make_report("saylog", "saylog")
+    # make_report("russian", "russian")
+    # make_report("map_pivot", "map_pivot")
+    # make_report(
+    #     "uplink",
+    #     "uplink_items",
+    #     "uplink_nukeops",
+    #     "changeling_powers",
+    #     "wizard_spell",
+    #     "malf_powers",
+    #     "heretic_knowledge",
+    # )
+    # make_report("cargo_orders", "cargo_orders")
+    # make_report("unique_players", "unique_players")
+    # make_report("dynamic", "dynamic")
+    # make_report("dynamic_100", "dynamic_100")
+    make_report("nukies_flukies", "nukies_flukies")
 
 
 def main():

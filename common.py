@@ -8,3 +8,6 @@ def create_default_engine():
 
 engine = create_default_engine()
 Session = sessionmaker(bind=engine)
+
+SQL_DIR = "sql"
+REPORTS_DIR = "reports"
