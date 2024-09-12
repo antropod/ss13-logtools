@@ -1,0 +1,6 @@
+scrapy
+requests
+pandas
+openpyxl
+sqlalchemy
+tqdm
