@@ -1,3 +1,5 @@
 select *
-from game
-limit 100;
+from manifest
+where special_role = 'Nuclear Operative'
+  and lower(ckey) = 'livrah'
+;

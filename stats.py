@@ -36,20 +36,20 @@ def make_reports():
     # make_report("saylog", "saylog")
     # make_report("russian", "russian")
     # make_report("map_pivot", "map_pivot")
-    # make_report(
-    #     "uplink",
-    #     "uplink_items",
-    #     "uplink_nukeops",
-    #     "changeling_powers",
-    #     "wizard_spell",
-    #     "malf_powers",
-    #     "heretic_knowledge",
-    # )
+    make_report(
+        "uplink",
+        "uplink_items",
+        "uplink_nukeops",
+        "changeling_powers",
+        "wizard_spell",
+        "malf_powers",
+        "heretic_knowledge",
+    )
     # make_report("cargo_orders", "cargo_orders")
     # make_report("unique_players", "unique_players")
     # make_report("dynamic", "dynamic")
     # make_report("dynamic_100", "dynamic_100")
-    make_report("nukies_flukies", "nukies_flukies")
+    # make_report("nukies_flukies", "nukies_flukies")
 
 
 def main():

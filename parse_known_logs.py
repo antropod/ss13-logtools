@@ -33,7 +33,7 @@ def parse_into_db(directory, archive_filename, session):
         RuntimeTxtParser(),
         CargoHtmlParser(),
         SiloParser(),
-        GameTxtParser(),
+        #GameTxtParser(),
         DynamicCombinedParser(),
         RoundEndDataHtmlParser(),
     ]
